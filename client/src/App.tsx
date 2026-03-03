@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import { Layout } from "@/components/Layout";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import Home from "@/pages/Home";
 import Dashboard from "@/pages/Dashboard";
 import Leaderboard from "@/pages/Leaderboard";
@@ -18,21 +19,24 @@ import AboutDSAC from "@/pages/AboutDSAC";
 
 function Router() {
   return (
-    <Layout>
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/about" component={AboutDSAC} />
-        <Route path="/dashboard" component={Dashboard} />
-        <Route path="/leaderboard" component={Leaderboard} />
-        <Route path="/daily" component={DailyQuestion} />
-        <Route path="/contests" component={Contests} />
-        <Route path="/quests" component={Quests} />
-        <Route path="/events" component={Events} />
-        <Route path="/resources" component={Resources} />
-        <Route path="/profile" component={Profile} />
-        <Route component={NotFound} />
-      </Switch>
-    </Layout>
+    <>
+      <ScrollToTop />
+      <Layout>
+        <Switch>
+          <Route path="/" component={Home} />
+          <Route path="/about" component={AboutDSAC} />
+          <Route path="/dashboard" component={Dashboard} />
+          <Route path="/leaderboard" component={Leaderboard} />
+          <Route path="/daily" component={DailyQuestion} />
+          <Route path="/contests" component={Contests} />
+          <Route path="/quests" component={Quests} />
+          <Route path="/events" component={Events} />
+          <Route path="/resources" component={Resources} />
+          <Route path="/profile" component={Profile} />
+          <Route component={NotFound} />
+        </Switch>
+      </Layout>
+    </>
   );
 }
 
