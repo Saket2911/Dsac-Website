@@ -1,0 +1,515 @@
+Here is your final upgraded master prompt, now refined with:
+
+Club name corrected to DSaC
+
+Explicit instruction to integrate the logo (to be provided separately)
+
+Clear requirement for eye-catching yet professional graphs
+
+Clean, production-ready clarity for AI execution
+
+
+You can copy this entirely and give it to an AI builder.
+
+
+---
+
+✅ MASTER DEVELOPMENT PROMPT
+
+Build a Full-Stack Gamified IT Club Platform – DSaC
+
+
+---
+
+🎯 Project Objective
+
+Build a full-stack, department-level gamified web platform for DSaC (Developers Student Activity Club) using the MERN stack and Tailwind CSS.
+
+This platform must be:
+
+Professional
+
+Elegant
+
+Achievement-oriented
+
+Clean and minimal
+
+Scalable and secure
+
+
+The design theme must follow a premium gold + cream aesthetic.
+
+The official DSaC logo will be provided separately and must be properly integrated into the navbar, authentication pages, and footer.
+
+
+---
+
+🏗 TECH STACK (MANDATORY)
+
+Frontend
+
+React (Functional Components only)
+
+React Router
+
+Tailwind CSS (custom theme configuration)
+
+Axios
+
+Context API (for authentication and global state)
+
+Framer Motion (subtle animations only)
+
+Recharts (for professional, eye-catching graphs)
+
+
+Backend
+
+Node.js
+
+Express.js
+
+MongoDB (Atlas)
+
+Mongoose
+
+JWT authentication
+
+bcrypt password hashing
+
+node-cron (daily question rotation)
+
+
+
+---
+
+🎨 DESIGN SYSTEM REQUIREMENTS
+
+Theme Colors
+
+Primary Gold: #C6A75E
+
+Dark Gold: #A8893D
+
+Cream Background: #F8F5EF
+
+Soft Background: #F3EFE6
+
+Dark Text: #2C2C2C
+
+
+UI Principles
+
+max-w-7xl container
+
+section spacing: py-16
+
+rounded-2xl cards
+
+subtle shadows
+
+smooth hover transitions
+
+serif headings + clean sans-serif body
+
+no neon colors
+
+no clutter
+
+no heavy animation
+
+
+This must look like an official department platform, not a gaming website.
+
+
+---
+
+👥 USER ROLES
+
+1. Admin
+
+
+2. Core Member
+
+
+3. Student
+
+
+
+Admins can:
+
+Create/edit/delete contests
+
+Add daily questions
+
+Create quests
+
+Create badges
+
+Manage events
+
+Upload resources
+
+View analytics dashboard
+
+
+Students can:
+
+Participate in contests
+
+Solve daily questions
+
+Complete quests
+
+Earn XP & badges
+
+View leaderboard
+
+Update profile
+
+
+
+---
+
+📂 DATABASE STRUCTURE
+
+Collections must include:
+
+Users
+Quests
+Badges
+Contests
+Submissions
+DailyQuestions
+Events
+Resources
+
+Each collection must be properly structured with timestamps and references using Mongoose relationships.
+
+
+---
+
+📊 GRAPHS & ANALYTICS (IMPORTANT)
+
+The platform must include eye-catching yet professional data visualizations using Recharts.
+
+Graphs must use subtle gold tones and neutral backgrounds.
+
+No bright or flashy color combinations.
+
+Required Graphs:
+
+Dashboard Graphs
+
+XP growth over time (Line chart)
+
+Weekly activity participation (Bar chart)
+
+Contest performance breakdown (Area or Bar chart)
+
+
+Admin Dashboard Graphs
+
+Monthly participation trends
+
+Most active users
+
+Quest completion distribution
+
+Event attendance statistics
+
+
+Graphs must:
+
+Be responsive
+
+Have tooltips
+
+Have smooth transitions
+
+Follow the gold theme styling
+
+Maintain professional appearance
+
+
+
+---
+
+📄 FRONTEND PAGES
+
+1️⃣ Home Page
+
+Sections:
+
+Hero Section
+
+DSaC logo (provided separately)
+
+Club name
+
+Tagline
+
+Join button
+
+Explore events button
+
+
+About DSaC
+Include the provided description:
+
+DSaC is a student-led technical club of passionate learners, developers, and problem-solvers united by a shared love for technology.
+We are dedicated to strengthening problem-solving skills and fostering a strong coding culture within our college.
+
+Our mission is to nurture curiosity, encourage collaboration, and help students develop strong analytical and technical abilities. Through peer learning, mentorship, and hands-on practice, we create a supportive space where students can explore technology beyond academics and continuously grow.
+
+DSaC is more than a club — it’s a community that believes in learning together, building confidence, and developing the mindset needed to thrive in the evolving world of technology.
+
+Additional sections:
+
+Founding year
+
+Mission statement
+
+Affiliation
+
+Focus technologies
+
+Activities
+
+Achievements
+
+Leadership
+
+Community values
+
+Get involved section
+
+
+
+---
+
+2️⃣ Dashboard
+
+Welcome message
+
+XP progress bar
+
+Level
+
+Rank
+
+Streak
+
+Active quests
+
+Recent activity
+
+Professional charts
+
+
+
+---
+
+3️⃣ Leaderboard
+
+Top 3 podium layout
+
+Filter options (weekly, monthly, all-time)
+
+Ranked table
+
+
+
+---
+
+4️⃣ Daily Question
+
+Question display
+
+Difficulty badge
+
+Submit answer
+
+Result feedback
+
+XP reward
+
+Streak indicator
+
+Countdown timer
+
+
+
+---
+
+5️⃣ Contests
+
+Upcoming contests
+
+Ongoing contests
+
+Past contests
+
+Submission system
+
+Score tracking
+
+
+
+---
+
+6️⃣ Quests
+
+Active quests
+
+Progress tracking
+
+XP reward
+
+Completed quests
+
+
+
+---
+
+7️⃣ Events
+
+Calendar or list layout
+
+Event registration
+
+Attendance tracking
+
+
+
+---
+
+8️⃣ Resources
+
+Search functionality
+
+Category filters
+
+Download/view system
+
+
+
+---
+
+9️⃣ Profile
+
+Avatar
+
+XP & level
+
+Badge showcase
+
+Contest history
+
+Editable profile
+
+
+
+---
+
+🔐 SECURITY REQUIREMENTS
+
+JWT authentication
+
+Role-based access control
+
+Password hashing
+
+Input validation
+
+Rate limiting
+
+Helmet middleware
+
+CORS properly configured
+
+MongoDB injection prevention
+
+
+
+---
+
+📱 RESPONSIVENESS
+
+Mobile-first approach
+
+Hamburger navigation
+
+Stack layouts on small screens
+
+Scrollable tables on mobile
+
+
+
+---
+
+📁 PROJECT STRUCTURE
+
+Frontend:
+
+src/
+ ├── components/
+ ├── pages/
+ ├── layouts/
+ ├── context/
+ ├── services/
+ ├── hooks/
+
+Backend:
+
+server/
+ ├── models/
+ ├── controllers/
+ ├── routes/
+ ├── middleware/
+ ├── config/
+
+
+---
+
+🚀 DEPLOYMENT
+
+Frontend → Vercel
+Backend → Render or Railway
+Database → MongoDB Atlas
+HTTPS mandatory
+
+
+---
+
+🎯 EXPECTED OUTPUT
+
+Fully functional MERN application
+
+Professional gold-themed UI
+
+Eye-catching yet department-appropriate analytics graphs
+
+Clean architecture
+
+Secure authentication
+
+Role-based functionality
+
+Scalable structure
+
+
+
+---
+
+If you’d like next, I can:
+
+Create a 6-week structured development roadmap
+
+Or generate a ready-to-use Mongoose schema set
+
+Or design a backend API endpoint blueprint
+
+
+What’s your submission deadline?
