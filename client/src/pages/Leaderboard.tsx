@@ -26,9 +26,9 @@ export default function Leaderboard() {
           Compete with your peers. Top 3 students at the end of the semester receive special recognition.
         </p>
         <div className="flex justify-center gap-2 mt-4">
-          <Button variant="outline" className="rounded-full bg-primary/10 text-primary border-primary">Weekly</Button>
-          <Button variant="ghost" className="rounded-full">Monthly</Button>
-          <Button variant="ghost" className="rounded-full">All Time</Button>
+          <Button variant="outline" className="rounded-xl bg-primary/10 text-primary border-primary/30 font-semibold hover:bg-primary/15">Weekly</Button>
+          <Button variant="ghost" className="rounded-xl font-semibold hover:bg-muted/50">Monthly</Button>
+          <Button variant="ghost" className="rounded-xl font-semibold hover:bg-muted/50">All Time</Button>
         </div>
       </div>
 
@@ -38,16 +38,16 @@ export default function Leaderboard() {
         <div className="flex flex-col items-center animate-in slide-in-from-bottom-8 duration-700 delay-100">
           <div className="relative mb-2">
             <Avatar className="h-16 w-16 border-4 border-slate-300">
-              <AvatarFallback className="bg-slate-100 text-slate-600 font-bold text-xl">{leaderboardData[1].avatar}</AvatarFallback>
+              <AvatarFallback className="bg-slate-50 text-slate-600 font-bold text-xl">{leaderboardData[1].avatar}</AvatarFallback>
             </Avatar>
-            <div className="absolute -top-3 -right-3 bg-slate-200 rounded-full p-1 border border-slate-300 shadow-sm">
+            <div className="absolute -top-3 -right-3 bg-slate-100 rounded-full p-1 border border-slate-300 shadow-sm">
               <Medal className="w-5 h-5 text-slate-500" />
             </div>
           </div>
           <div className="font-bold text-foreground text-sm md:text-base">{leaderboardData[1].name}</div>
           <div className="text-xs text-muted-foreground font-medium mb-2">{leaderboardData[1].xp} XP</div>
-          <div className="w-24 md:w-32 h-24 bg-gradient-to-t from-slate-200 to-slate-100 rounded-t-lg border-t-4 border-slate-300 flex items-center justify-center shadow-inner">
-            <span className="text-4xl font-serif font-bold text-slate-400">2</span>
+          <div className="w-24 md:w-32 h-24 bg-gradient-to-t from-slate-200 to-slate-50 rounded-t-2xl border-t-4 border-slate-300 flex items-center justify-center shadow-inner">
+            <span className="text-4xl font-bold text-slate-400">2</span>
           </div>
         </div>
 
@@ -58,13 +58,13 @@ export default function Leaderboard() {
               <Crown className="w-8 h-8 fill-yellow-500" />
             </div>
             <Avatar className="h-20 w-20 border-4 border-yellow-400 ring-4 ring-yellow-400/20">
-              <AvatarFallback className="bg-yellow-100 text-yellow-700 font-bold text-2xl">{leaderboardData[0].avatar}</AvatarFallback>
+              <AvatarFallback className="bg-yellow-50 text-yellow-700 font-bold text-2xl">{leaderboardData[0].avatar}</AvatarFallback>
             </Avatar>
           </div>
           <div className="font-bold text-foreground text-base md:text-lg">{leaderboardData[0].name}</div>
           <div className="text-sm text-primary font-bold mb-2">{leaderboardData[0].xp} XP</div>
-          <div className="w-28 md:w-36 h-32 bg-gradient-to-t from-yellow-200 to-yellow-100 rounded-t-lg border-t-4 border-yellow-400 flex items-center justify-center shadow-inner">
-            <span className="text-5xl font-serif font-bold text-yellow-600">1</span>
+          <div className="w-28 md:w-36 h-32 bg-gradient-to-t from-yellow-200 to-yellow-50 rounded-t-2xl border-t-4 border-yellow-400 flex items-center justify-center shadow-inner">
+            <span className="text-5xl font-bold text-yellow-600">1</span>
           </div>
         </div>
 
@@ -72,53 +72,53 @@ export default function Leaderboard() {
         <div className="flex flex-col items-center animate-in slide-in-from-bottom-6 duration-700 delay-200">
           <div className="relative mb-2">
             <Avatar className="h-14 w-14 border-4 border-amber-600">
-              <AvatarFallback className="bg-amber-100 text-amber-800 font-bold">{leaderboardData[2].avatar}</AvatarFallback>
+              <AvatarFallback className="bg-amber-50 text-amber-800 font-bold">{leaderboardData[2].avatar}</AvatarFallback>
             </Avatar>
-            <div className="absolute -top-3 -right-3 bg-amber-100 rounded-full p-1 border border-amber-600 shadow-sm">
+            <div className="absolute -top-3 -right-3 bg-amber-50 rounded-full p-1 border border-amber-600 shadow-sm">
               <Medal className="w-4 h-4 text-amber-700" />
             </div>
           </div>
           <div className="font-bold text-foreground text-sm md:text-base">{leaderboardData[2].name}</div>
           <div className="text-xs text-muted-foreground font-medium mb-2">{leaderboardData[2].xp} XP</div>
-          <div className="w-24 md:w-32 h-16 bg-gradient-to-t from-amber-200 to-amber-100 rounded-t-lg border-t-4 border-amber-600 flex items-center justify-center shadow-inner">
-            <span className="text-3xl font-serif font-bold text-amber-700">3</span>
+          <div className="w-24 md:w-32 h-16 bg-gradient-to-t from-amber-200 to-amber-50 rounded-t-2xl border-t-4 border-amber-600 flex items-center justify-center shadow-inner">
+            <span className="text-3xl font-bold text-amber-700">3</span>
           </div>
         </div>
       </div>
 
       {/* Rankings Table */}
-      <Card className="border-border/50 shadow-sm max-w-4xl mx-auto overflow-hidden">
+      <Card className="border-border/30 card-shadow max-w-4xl mx-auto overflow-hidden rounded-2xl bg-white">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="text-xs text-muted-foreground uppercase bg-card/50 border-b border-border">
+            <thead className="text-xs text-muted-foreground uppercase bg-muted/30 border-b border-border/30">
               <tr>
-                <th scope="col" className="px-6 py-4 rounded-tl-lg font-semibold">Rank</th>
+                <th scope="col" className="px-6 py-4 rounded-tl-2xl font-semibold">Rank</th>
                 <th scope="col" className="px-6 py-4 font-semibold">Student</th>
                 <th scope="col" className="px-6 py-4 font-semibold">Level</th>
-                <th scope="col" className="px-6 py-4 font-semibold text-right rounded-tr-lg">Total XP</th>
+                <th scope="col" className="px-6 py-4 font-semibold text-right rounded-tr-2xl">Total XP</th>
               </tr>
             </thead>
             <tbody>
               {leaderboardData.slice(3).map((user) => (
-                <tr key={user.rank} className="bg-card border-b border-border/40 hover:bg-muted/30 transition-colors">
+                <tr key={user.rank} className="bg-white border-b border-border/20 hover:bg-primary/3 transition-colors">
                   <td className="px-6 py-4 font-medium">
-                    <span className="w-8 h-8 rounded-full bg-background flex items-center justify-center text-muted-foreground font-serif">
+                    <span className="w-8 h-8 rounded-lg bg-muted/40 flex items-center justify-center text-muted-foreground font-bold">
                       #{user.rank}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
-                        <AvatarFallback className="bg-primary/10 text-primary text-xs">{user.avatar}</AvatarFallback>
+                        <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">{user.avatar}</AvatarFallback>
                       </Avatar>
                       <div className="font-semibold text-foreground">{user.name}</div>
                       {user.name === "Alex Johnson" && (
-                        <Badge variant="outline" className="ml-2 bg-primary/10 text-primary border-primary/20 text-[10px]">You</Badge>
+                        <Badge variant="outline" className="ml-2 bg-primary/10 text-primary border-primary/20 text-[10px] rounded-lg">You</Badge>
                       )}
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <Badge variant="secondary" className="bg-background">Lvl {user.level}</Badge>
+                    <Badge variant="secondary" className="bg-muted/50 rounded-lg font-semibold">Lvl {user.level}</Badge>
                   </td>
                   <td className="px-6 py-4 text-right font-bold text-primary">
                     {user.xp} XP

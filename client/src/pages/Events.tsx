@@ -93,11 +93,11 @@ const eventsByCategory: Record<EventCategory, EventItem[]> = {
 const getBadgeStyle = (type: string) => {
   switch (type) {
     case "Flagship Event":
-      return "bg-amber-100 text-amber-800 border border-amber-300 hover:bg-amber-100";
+      return "bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-50 rounded-lg";
     case "National Level":
-      return "bg-purple-100 text-purple-800 border border-purple-300 hover:bg-purple-100";
+      return "bg-violet-50 text-violet-700 border border-violet-200 hover:bg-violet-50 rounded-lg";
     default:
-      return "bg-secondary/10 text-secondary";
+      return "bg-primary/10 text-primary rounded-lg";
   }
 };
 
@@ -116,23 +116,23 @@ const getBadgeIcon = (type: string) => {
 function EventCard({ event, isFlagship }: { event: EventItem; isFlagship?: boolean }) {
   return (
     <Card
-      className={`border-border/50 shadow-sm transition-all duration-300 ${isFlagship
-          ? "hover:shadow-lg hover:border-primary/30"
-          : "hover:shadow-md"
+      className={`border-border/30 transition-all duration-300 rounded-2xl bg-white card-shadow ${isFlagship
+        ? "hover:shadow-lg hover:border-primary/20"
+        : "hover:shadow-md"
         }`}
     >
       <CardContent className="p-0 flex flex-col md:flex-row">
         {/* Date Column */}
         <div
-          className={`md:border-r border-b md:border-b-0 border-border/50 p-6 flex md:flex-col items-center justify-center gap-2 md:gap-0 md:min-w-[140px] shrink-0 ${isFlagship
-              ? "bg-gradient-to-b from-amber-50 to-card/50 dark:from-amber-950/20 dark:to-card/50"
-              : "bg-card/50"
+          className={`md:border-r border-b md:border-b-0 border-border/30 p-6 flex md:flex-col items-center justify-center gap-2 md:gap-0 md:min-w-[140px] shrink-0 rounded-l-2xl ${isFlagship
+            ? "bg-gradient-to-b from-amber-50 to-white"
+            : "bg-muted/30"
             }`}
         >
           <span
             className={`text-sm font-bold uppercase ${isFlagship
-                ? "text-amber-600 dark:text-amber-400"
-                : "text-primary"
+              ? "text-amber-600"
+              : "text-primary"
               }`}
           >
             {event.date.split(",")[0].split(" ")[0]}
@@ -151,12 +151,12 @@ function EventCard({ event, isFlagship }: { event: EventItem; isFlagship?: boole
                 {event.type}
               </Badge>
             ) : (
-              <Badge variant="secondary" className="bg-secondary/10 text-secondary mb-2">
+              <Badge variant="secondary" className="bg-primary/10 text-primary mb-2 rounded-lg">
                 {event.type}
               </Badge>
             )}
             {event.isRegistered && (
-              <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-none">
+              <Badge className="bg-emerald-50 text-emerald-700 hover:bg-emerald-50 border-emerald-200 rounded-lg">
                 Registered
               </Badge>
             )}
@@ -180,16 +180,16 @@ function EventCard({ event, isFlagship }: { event: EventItem; isFlagship?: boole
 
           <div className="flex gap-3 mt-auto">
             {isFlagship ? (
-              <Button className="bg-primary hover:bg-secondary text-white">Learn More</Button>
+              <Button className="gradient-blue text-white rounded-xl shadow-sm hover:shadow-md transition-all">Learn More</Button>
             ) : (
               <Button
                 variant={event.isRegistered ? "outline" : "default"}
-                className={!event.isRegistered ? "bg-primary hover:bg-secondary text-white" : ""}
+                className={`rounded-xl transition-all ${!event.isRegistered ? "gradient-blue text-white shadow-sm hover:shadow-md" : "hover:border-primary/40"}`}
               >
                 {event.isRegistered ? "Cancel RSVP" : "RSVP Now"}
               </Button>
             )}
-            <Button variant="ghost" size="icon" className="border border-border">
+            <Button variant="ghost" size="icon" className="border border-border/50 rounded-xl hover:border-primary/30 hover:text-primary">
               <ExternalLink className="w-4 h-4" />
             </Button>
           </div>
@@ -202,16 +202,16 @@ function EventCard({ event, isFlagship }: { event: EventItem; isFlagship?: boole
 /* ── Empty State ── */
 function EmptyState({ category }: { category: string }) {
   return (
-    <Card className="border-border/50 border-dashed shadow-none">
+    <Card className="border-border/30 border-dashed shadow-none rounded-2xl bg-white">
       <CardContent className="py-16 flex flex-col items-center justify-center text-center">
-        <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center mb-4">
+        <div className="w-14 h-14 rounded-xl bg-muted/50 flex items-center justify-center mb-4">
           {category === "ongoing" ? (
             <Play className="w-6 h-6 text-muted-foreground" />
           ) : (
             <History className="w-6 h-6 text-muted-foreground" />
           )}
         </div>
-        <h3 className="text-lg font-semibold text-foreground mb-1">
+        <h3 className="text-lg font-bold text-foreground mb-1">
           No {category} events
         </h3>
         <p className="text-muted-foreground text-sm max-w-xs">
@@ -247,11 +247,11 @@ export default function Events() {
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={`
-              flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium
+              flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold
               whitespace-nowrap transition-all duration-300 border
               ${activeTab === tab.key
-                ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
-                : "bg-card text-muted-foreground border-border/50 hover:bg-muted hover:text-foreground hover:border-border"
+                ? "gradient-blue text-white border-primary shadow-md shadow-primary/20"
+                : "bg-white text-muted-foreground border-border/50 hover:bg-muted/30 hover:text-foreground hover:border-border card-shadow"
               }
             `}
           >
@@ -260,8 +260,8 @@ export default function Events() {
             {eventsByCategory[tab.key].length > 0 && (
               <span
                 className={`ml-1 text-xs rounded-full px-1.5 py-0.5 ${activeTab === tab.key
-                    ? "bg-white/20 text-white"
-                    : "bg-muted-foreground/10 text-muted-foreground"
+                  ? "bg-white/20 text-white"
+                  : "bg-muted text-muted-foreground"
                   }`}
               >
                 {eventsByCategory[tab.key].length}
@@ -294,29 +294,30 @@ export default function Events() {
 
         {/* ── Calendar Sidebar ── */}
         <div className="lg:col-span-1 space-y-6">
-          <Card className="border-border/50 shadow-sm sticky top-24">
+          <Card className="border-border/30 card-shadow sticky top-24 rounded-2xl bg-white">
             <CardHeader>
-              <CardTitle className="font-serif">Calendar</CardTitle>
+              <CardTitle className="font-bold">Calendar</CardTitle>
             </CardHeader>
             <CardContent className="flex justify-center pb-6">
               <Calendar
                 mode="single"
                 selected={date}
                 onSelect={setDate}
-                className="rounded-md border-border/50"
+                className="rounded-xl border-border/30"
                 modifiers={{
                   event: [new Date(2023, 9, 15), new Date(2023, 9, 18), new Date(2023, 9, 22)],
                 }}
                 modifiersStyles={{
                   event: {
                     fontWeight: "bold",
-                    backgroundColor: "hsl(var(--primary)/0.2)",
+                    backgroundColor: "hsl(var(--primary)/0.15)",
                     color: "hsl(var(--primary))",
+                    borderRadius: "8px",
                   },
                 }}
               />
             </CardContent>
-            <div className="bg-card/50 p-4 border-t border-border/50 text-sm">
+            <div className="bg-muted/30 p-4 border-t border-border/30 text-sm rounded-b-2xl">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-3 h-3 rounded-full bg-primary/20 border border-primary"></div>
                 <span className="text-muted-foreground">Event Scheduled</span>

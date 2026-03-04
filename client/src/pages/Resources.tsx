@@ -6,7 +6,7 @@ import { Search, Download, FileText, Video, Link as LinkIcon, FolderOpen, Chevro
 
 export default function Resources() {
   const categories = ["All", "Roadmaps", "Cheatsheets", "Workshop Materials", "Interview Prep"];
-  
+
   const resources = [
     { title: "Complete MERN Stack Roadmap", type: "document", category: "Roadmaps", date: "Sep 2023", size: "2.4 MB" },
     { title: "React Hooks Cheatsheet", type: "document", category: "Cheatsheets", date: "Oct 2023", size: "1.1 MB" },
@@ -17,7 +17,7 @@ export default function Resources() {
   ];
 
   const getIcon = (type: string) => {
-    switch(type) {
+    switch (type) {
       case 'document': return <FileText className="w-6 h-6 text-blue-500" />;
       case 'video': return <Video className="w-6 h-6 text-red-500" />;
       case 'link': return <LinkIcon className="w-6 h-6 text-green-500" />;
@@ -27,7 +27,7 @@ export default function Resources() {
 
   return (
     <div className="py-10 space-y-10 animate-in fade-in duration-500">
-      <div className="bg-card border border-border/50 rounded-3xl p-8 md:p-12 text-center space-y-6 relative overflow-hidden">
+      <div className="bg-white border border-border/30 rounded-2xl p-8 md:p-12 text-center space-y-6 relative overflow-hidden card-shadow">
         <div className="absolute top-0 right-0 p-8 opacity-5">
           <FolderOpen className="w-48 h-48" />
         </div>
@@ -38,10 +38,10 @@ export default function Resources() {
           </p>
           <div className="relative max-w-xl mx-auto mt-8">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <Input 
-              type="text" 
-              placeholder="Search for resources..." 
-              className="pl-12 pr-4 py-6 rounded-full bg-background border-border shadow-sm text-base focus-visible:ring-primary"
+            <Input
+              type="text"
+              placeholder="Search for resources..."
+              className="pl-12 pr-4 py-6 rounded-xl bg-muted/30 border-border/50 shadow-sm text-base focus-visible:ring-primary"
             />
           </div>
         </div>
@@ -50,12 +50,12 @@ export default function Resources() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Categories Sidebar */}
         <div className="lg:col-span-1 space-y-4">
-          <h3 className="font-serif font-bold text-lg px-2">Categories</h3>
+          <h3 className="font-bold text-lg px-2">Categories</h3>
           <div className="flex flex-col gap-1">
             {categories.map((category, idx) => (
-              <Button 
-                key={idx} 
-                variant={idx === 0 ? "secondary" : "ghost"} 
+              <Button
+                key={idx}
+                variant={idx === 0 ? "secondary" : "ghost"}
                 className={`justify-start w-full ${idx === 0 ? 'bg-primary/10 text-primary font-bold' : 'text-foreground/80 hover:text-foreground'}`}
               >
                 {category}
@@ -63,7 +63,7 @@ export default function Resources() {
             ))}
           </div>
 
-          <Card className="border-border/50 shadow-sm mt-8 bg-gradient-to-b from-card to-background">
+          <Card className="border-border/30 card-shadow mt-8 bg-gradient-to-b from-white to-muted/20 rounded-2xl">
             <CardContent className="p-6 text-center space-y-4">
               <div className="w-12 h-12 rounded-full bg-primary/20 mx-auto flex items-center justify-center">
                 <span className="text-xl">💡</span>
@@ -80,13 +80,13 @@ export default function Resources() {
         {/* Resources List */}
         <div className="lg:col-span-3 space-y-4">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-serif font-bold text-foreground">All Resources</h2>
+            <h2 className="text-2xl font-bold text-foreground">All Resources</h2>
             <span className="text-sm text-muted-foreground">Showing 6 results</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {resources.map((resource, idx) => (
-              <Card key={idx} className="border-border/50 shadow-sm hover:shadow-md transition-all group cursor-pointer">
+              <Card key={idx} className="border-border/30 card-shadow hover:shadow-lg transition-all group cursor-pointer rounded-2xl bg-white">
                 <CardContent className="p-5 flex gap-4">
                   <div className="w-12 h-12 rounded-xl bg-background border border-border/50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                     {getIcon(resource.type)}

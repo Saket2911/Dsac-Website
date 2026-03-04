@@ -28,45 +28,49 @@
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
   
-  --font-sans: "DM Sans", sans-serif;
-  --font-serif: "Playfair Display", serif;
+  --font-sans: "Inter", "DM Sans", system-ui, sans-serif;
+  --font-serif: "Inter", "DM Sans", system-ui, sans-serif;
 }
 
 :root {
-  --radius: 1rem; /* rounded-2xl */
+  --radius: 1rem;
   
-  /* Cream Background: #F8F5EF -> HSL: 40, 33%, 96% */
-  --background: 40 33% 96%;
-  /* Dark Text: #2C2C2C -> HSL: 0, 0%, 17% */
-  --foreground: 0 0% 17%;
+  /* Modern Blue Dashboard Theme */
+  /* Background: soft neutral gray */
+  --background: 222 20% 96%;
+  /* Foreground: dark charcoal */
+  --foreground: 222 47% 11%;
   
-  /* Soft Background: #F3EFE6 -> HSL: 42, 36%, 93% */
-  --card: 42 36% 93%;
-  --card-foreground: 0 0% 17%;
+  /* Cards: clean white */
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
   
-  --popover: 40 33% 96%;
-  --popover-foreground: 0 0% 17%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
   
-  /* Primary Gold: #C6A75E -> HSL: 42, 46%, 57% */
-  --primary: 42 46% 57%;
+  /* Primary: vibrant blue */
+  --primary: 217 91% 53%;
   --primary-foreground: 0 0% 100%;
   
-  /* Dark Gold: #A8893D -> HSL: 43, 47%, 45% */
-  --secondary: 43 47% 45%;
+  /* Secondary: deeper blue */
+  --secondary: 224 76% 40%;
   --secondary-foreground: 0 0% 100%;
   
-  --muted: 42 20% 88%;
-  --muted-foreground: 40 10% 40%;
+  /* Muted: soft gray */
+  --muted: 220 14% 92%;
+  --muted-foreground: 220 9% 46%;
   
-  --accent: 42 36% 93%;
-  --accent-foreground: 0 0% 17%;
+  /* Accent: light blue tint */
+  --accent: 214 95% 96%;
+  --accent-foreground: 217 91% 53%;
   
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
   
-  --border: 42 20% 88%;
-  --input: 42 20% 88%;
-  --ring: 42 46% 57%;
+  /* Border: light gray */
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 217 91% 53%;
 }
 
 @layer base {
@@ -77,6 +81,29 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif tracking-tight;
+    @apply font-sans font-bold tracking-tight;
   }
+}
+
+/* Modern card shadows */
+.card-shadow {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.card-shadow-lg {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04), 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Blue gradient for featured sections */
+.gradient-blue {
+  background: linear-gradient(135deg, #2563EB, #1E40AF);
+}
+
+.gradient-blue-light {
+  background: linear-gradient(135deg, #3B82F6, #2563EB);
+}
+
+/* Smooth transitions */
+.transition-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

@@ -16,8 +16,8 @@ export default function Quests() {
 
       {/* Active Quest */}
       <div className="mt-12">
-        <h3 className="text-xl font-serif font-bold text-foreground mb-4">Continue Your Journey</h3>
-        <Card className="border-primary/40 shadow-md bg-card overflow-hidden">
+        <h3 className="text-xl font-bold text-foreground mb-4">Continue Your Journey</h3>
+        <Card className="border-primary/30 card-shadow-lg bg-white overflow-hidden rounded-2xl">
           <div className="h-2 w-full bg-primary/20">
             <div className="h-full bg-primary" style={{ width: '60%' }}></div>
           </div>
@@ -31,7 +31,7 @@ export default function Quests() {
                 <Badge className="bg-primary text-primary-foreground self-center md:self-auto">+500 XP Reward</Badge>
               </div>
               <p className="text-muted-foreground">Master the fundamentals of React including components, state management, hooks, and routing.</p>
-              
+
               <div className="pt-2 space-y-2">
                 <div className="flex justify-between text-sm font-medium">
                   <span className="text-foreground">Progress</span>
@@ -41,7 +41,7 @@ export default function Quests() {
               </div>
             </div>
             <div className="shrink-0 w-full md:w-auto">
-              <Button size="lg" className="w-full md:w-auto bg-primary hover:bg-secondary text-white rounded-full">
+              <Button size="lg" className="w-full md:w-auto gradient-blue text-white rounded-xl shadow-sm hover:shadow-md transition-all">
                 Resume Quest
               </Button>
             </div>
@@ -52,7 +52,7 @@ export default function Quests() {
       {/* Quest Library */}
       <div className="mt-12">
         <div className="flex justify-between items-end mb-6">
-          <h3 className="text-xl font-serif font-bold text-foreground">Quest Library</h3>
+          <h3 className="text-xl font-bold text-foreground">Quest Library</h3>
           <div className="flex gap-2">
             <Badge variant="outline" className="cursor-pointer bg-background">All</Badge>
             <Badge variant="secondary" className="cursor-pointer">Frontend</Badge>
@@ -63,7 +63,7 @@ export default function Quests() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Completed Quest */}
-          <Card className="border-border/50 shadow-sm opacity-80 hover:opacity-100 transition-opacity">
+          <Card className="border-border/30 card-shadow opacity-80 hover:opacity-100 transition-opacity rounded-2xl bg-white">
             <CardHeader className="pb-3 relative">
               <div className="absolute top-4 right-4 bg-green-100 text-green-700 rounded-full p-1">
                 <CheckCircle2 className="w-5 h-5" />
@@ -88,7 +88,7 @@ export default function Quests() {
             { title: "Algorithms 101", icon: "🧠", desc: "Sorting, searching, and fundamental algorithms.", xp: 800, tag: "DSA" },
             { title: "Data Structures", icon: "📚", desc: "Arrays, LinkedLists, Trees, and Graphs.", xp: 800, tag: "DSA" },
           ].map((quest, i) => (
-            <Card key={i} className="border-border/50 shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col">
+            <Card key={i} className="border-border/30 card-shadow hover:shadow-lg transition-all duration-300 group flex flex-col rounded-2xl bg-white">
               <CardHeader className="pb-3 flex-1">
                 <div className="flex justify-between items-start mb-4">
                   <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center">
@@ -104,7 +104,7 @@ export default function Quests() {
                   <div className="text-sm font-bold text-primary flex items-center gap-1">
                     <Target className="w-4 h-4" /> +{quest.xp} XP
                   </div>
-                  <Button variant="ghost" size="sm" className="rounded-full px-4 -mr-2 group-hover:bg-primary/10 group-hover:text-primary">
+                  <Button variant="ghost" size="sm" className="rounded-xl px-4 -mr-2 group-hover:bg-primary/10 group-hover:text-primary">
                     Start <ChevronRight className="w-4 h-4 ml-1" />
                   </Button>
                 </div>
@@ -113,7 +113,7 @@ export default function Quests() {
           ))}
 
           {/* Locked Quest */}
-          <Card className="border-border/30 bg-muted/20 shadow-none">
+          <Card className="border-border/20 bg-muted/20 shadow-none rounded-2xl">
             <CardHeader className="pb-3 relative opacity-60">
               <div className="w-12 h-12 rounded-xl bg-slate-200 flex items-center justify-center mb-4">
                 <span className="text-2xl opacity-50">☁️</span>

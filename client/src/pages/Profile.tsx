@@ -13,7 +13,7 @@ export default function Profile() {
     <div className="py-10 animate-in fade-in duration-500 max-w-5xl mx-auto">
       {/* Profile Header */}
       <div className="relative mb-16">
-        <div className="h-48 md:h-64 w-full rounded-3xl bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/10 border border-border/50 overflow-hidden relative">
+        <div className="h-48 md:h-64 w-full rounded-2xl gradient-blue relative overflow-hidden">
           {/* Abstract pattern bg */}
           <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, hsl(var(--primary)) 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
         </div>
@@ -21,7 +21,7 @@ export default function Profile() {
         <div className="absolute -bottom-12 left-8 md:left-12 flex items-end gap-6">
           <div className="relative">
             <Avatar className="h-28 w-28 md:h-32 md:w-32 border-4 border-background bg-background shadow-xl">
-              <AvatarFallback className="bg-primary/10 text-primary text-4xl font-serif">AJ</AvatarFallback>
+              <AvatarFallback className="bg-primary/10 text-primary text-4xl font-bold">AJ</AvatarFallback>
             </Avatar>
             <button className="absolute bottom-0 right-0 p-2 rounded-full bg-primary text-white shadow-md hover:bg-secondary transition-colors">
               <Edit2 className="w-4 h-4" />
@@ -51,24 +51,24 @@ export default function Profile() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: Stats & Links */}
         <div className="space-y-6">
-          <Card className="border-border/50 shadow-sm">
+          <Card className="border-border/30 card-shadow rounded-2xl bg-white">
             <CardContent className="p-6">
               <div className="space-y-6">
                 <div>
                   <div className="flex justify-between items-end mb-2">
-                    <span className="font-serif font-bold text-lg">Level 12</span>
+                    <span className="font-bold text-lg">Level 12</span>
                     <span className="text-sm font-bold text-primary">3,450 XP</span>
                   </div>
-                  <Progress value={86} className="h-2.5 bg-primary/20" indicatorClassName="bg-primary" />
+                  <Progress value={86} className="h-2.5 bg-primary/15 rounded-full" />
                   <p className="text-xs text-muted-foreground text-right mt-2">550 XP to next level</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/40">
-                  <div className="text-center p-3 bg-card/50 rounded-xl border border-border/30">
+                  <div className="text-center p-3 bg-muted/30 rounded-xl border border-border/30">
                     <div className="text-2xl font-bold text-foreground mb-1">42</div>
                     <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Global Rank</div>
                   </div>
-                  <div className="text-center p-3 bg-card/50 rounded-xl border border-border/30">
+                  <div className="text-center p-3 bg-muted/30 rounded-xl border border-border/30">
                     <div className="text-2xl font-bold text-orange-500 flex items-center justify-center gap-1">
                       14 <span className="text-sm text-orange-500">🔥</span>
                     </div>
@@ -79,7 +79,7 @@ export default function Profile() {
             </CardContent>
           </Card>
 
-          <Card className="border-border/50 shadow-sm">
+          <Card className="border-border/30 card-shadow rounded-2xl bg-white">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">Connect</CardTitle>
             </CardHeader>
@@ -123,7 +123,7 @@ export default function Profile() {
 
             <TabsContent value="achievements" className="pt-6 space-y-6">
               <div>
-                <h3 className="text-xl font-serif font-bold text-foreground mb-4">Badges Earned (5)</h3>
+                <h3 className="text-xl font-bold text-foreground mb-4">Badges Earned (5)</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {[
                     { name: "First Blood", icon: "🩸", desc: "Solved first daily question" },
@@ -132,8 +132,8 @@ export default function Profile() {
                     { name: "Top 50", icon: "🏆", desc: "Reached top 50 in leaderboard" },
                     { name: "React Novice", icon: "⚛️", desc: "Completed React basics quest" }
                   ].map((badge, i) => (
-                    <div key={i} className="bg-card border border-border/50 rounded-2xl p-4 text-center hover:shadow-md transition-shadow group">
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/10 to-primary/30 mx-auto flex items-center justify-center text-3xl mb-3 border border-primary/20 group-hover:scale-110 transition-transform">
+                    <div key={i} className="bg-white border border-border/30 rounded-2xl p-4 text-center hover:shadow-md card-shadow transition-shadow group">
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/10 to-blue-400/20 mx-auto flex items-center justify-center text-3xl mb-3 border border-primary/15 group-hover:scale-110 transition-transform">
                         {badge.icon}
                       </div>
                       <h4 className="font-bold text-sm text-foreground">{badge.name}</h4>
@@ -153,7 +153,7 @@ export default function Profile() {
             </TabsContent>
 
             <TabsContent value="history" className="pt-6">
-              <Card className="border-border/50 shadow-sm">
+              <Card className="border-border/30 card-shadow rounded-2xl bg-white">
                 <CardContent className="p-0">
                   <div className="divide-y divide-border/40">
                     {[
@@ -166,9 +166,9 @@ export default function Profile() {
                       <div key={i} className="p-4 sm:p-6 flex items-center justify-between hover:bg-muted/20 transition-colors">
                         <div className="flex items-center gap-4">
                           <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${item.type === 'problem' ? 'bg-blue-100 text-blue-600' :
-                              item.type === 'quest' ? 'bg-purple-100 text-purple-600' :
-                                item.type === 'contest' ? 'bg-orange-100 text-orange-600' :
-                                  'bg-yellow-100 text-yellow-600'
+                            item.type === 'quest' ? 'bg-purple-100 text-purple-600' :
+                              item.type === 'contest' ? 'bg-orange-100 text-orange-600' :
+                                'bg-yellow-100 text-yellow-600'
                             }`}>
                             {item.type === 'problem' && <Code className="w-5 h-5" />}
                             {item.type === 'quest' && <Target className="w-5 h-5" />}
@@ -189,7 +189,7 @@ export default function Profile() {
             </TabsContent>
 
             <TabsContent value="edit" className="pt-6">
-              <Card className="border-border/50 shadow-sm">
+              <Card className="border-border/30 card-shadow rounded-2xl bg-white">
                 <CardHeader>
                   <CardTitle>Personal Information</CardTitle>
                 </CardHeader>
@@ -225,7 +225,7 @@ export default function Profile() {
 
                   <div className="flex justify-end gap-4 pt-6">
                     <Button variant="outline">Cancel</Button>
-                    <Button className="bg-primary hover:bg-secondary text-white">Save Changes</Button>
+                    <Button className="gradient-blue text-white rounded-xl shadow-sm hover:shadow-md transition-all">Save Changes</Button>
                   </div>
                 </CardContent>
               </Card>

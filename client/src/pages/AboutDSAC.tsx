@@ -94,12 +94,12 @@ export default function AboutDSAC() {
     <div className="flex flex-col pb-20">
       {/* ── Hero Header ── */}
       <section className="py-16 md:py-24 animate-in fade-in slide-in-from-bottom-8 duration-700">
-        <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary mb-6">
+        <div className="inline-flex items-center rounded-full bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary mb-6">
           <span className="flex h-2 w-2 rounded-full bg-primary mr-2"></span>
           About the Club
         </div>
         <h1 className="text-5xl md:text-7xl font-bold leading-tight text-foreground mb-6">
-          About <span className="text-primary italic">DSAC</span>
+          About <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">DSAC</span>
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl leading-relaxed">
           Data Structures and Algorithms Club — a student-led technical community founded in 2024, united by a shared love for technology and problem-solving.
@@ -112,7 +112,7 @@ export default function AboutDSAC() {
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
         variants={stagger}
-        className="py-16 bg-card rounded-3xl px-8 md:px-16 my-6 relative overflow-hidden"
+        className="py-16 bg-white rounded-2xl px-8 md:px-16 my-6 relative overflow-hidden card-shadow"
       >
         <div className="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-r from-background/50 to-transparent -z-10"></div>
         <div className="max-w-4xl mx-auto space-y-8">
@@ -145,7 +145,7 @@ export default function AboutDSAC() {
           <motion.p variants={fadeUp} custom={2} className="text-lg text-muted-foreground leading-relaxed max-w-3xl mx-auto">
             Making coding accessible to all students while nurturing curiosity, encouraging collaboration, and helping students develop strong analytical and technical abilities. Through peer learning, mentorship, and hands-on practice, we create a supportive space where students explore technology beyond academics and continuously grow.
           </motion.p>
-          <motion.p variants={fadeUp} custom={3} className="font-serif text-2xl text-secondary mt-8 italic max-w-3xl mx-auto">
+          <motion.p variants={fadeUp} custom={3} className="text-xl text-primary/80 mt-8 italic font-medium max-w-3xl mx-auto">
             "DSAC is more than a club — it's a community that believes in learning together, building confidence, and developing the mindset needed to thrive in the evolving world of technology."
           </motion.p>
         </div>
@@ -158,7 +158,7 @@ export default function AboutDSAC() {
         viewport={{ once: true, amount: 0.5 }}
         variants={fadeUp}
         custom={0}
-        className="bg-card rounded-3xl px-8 md:px-16 py-10 my-6 flex flex-col md:flex-row items-center gap-6"
+        className="bg-white rounded-2xl px-8 md:px-16 py-10 my-6 flex flex-col md:flex-row items-center gap-6 card-shadow"
       >
         <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
           <GraduationCap className="w-7 h-7 text-primary" />
@@ -189,7 +189,7 @@ export default function AboutDSAC() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {activities.map((a, idx) => (
             <motion.div key={idx} variants={fadeUp} custom={idx + 1}>
-              <div className="bg-card/50 border border-border/50 rounded-2xl p-8 hover:bg-card hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group h-full">
+              <div className="bg-white border border-border/30 rounded-2xl p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group h-full card-shadow">
                 <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform">
                   {a.icon}
                 </div>
@@ -207,7 +207,7 @@ export default function AboutDSAC() {
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
         variants={stagger}
-        className="py-16 bg-card rounded-3xl px-8 md:px-16 my-6"
+        className="py-16 bg-white rounded-2xl px-8 md:px-16 my-6 card-shadow"
       >
         <motion.h2 variants={fadeUp} custom={0} className="text-3xl md:text-4xl font-bold text-foreground text-center mb-10">
           Technologies We Focus On
@@ -237,7 +237,7 @@ export default function AboutDSAC() {
           How We Meet
         </motion.h2>
         <motion.div variants={fadeUp} custom={1} className="max-w-2xl mx-auto">
-          <Card className="border-border/50 shadow-sm">
+          <Card className="border-border/30 card-shadow rounded-2xl bg-white">
             <CardContent className="p-8 space-y-6">
               {meetingFormats.map((m, idx) => (
                 <div key={idx} className="flex items-center gap-4 text-lg">
@@ -270,7 +270,7 @@ export default function AboutDSAC() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {achievements.map((a, idx) => (
             <motion.div key={idx} variants={fadeUp} custom={idx + 1}>
-              <Card className="border-border/50 shadow-sm hover:shadow-md transition-all h-full">
+              <Card className="border-border/30 card-shadow hover:shadow-lg transition-all h-full rounded-2xl bg-white">
                 <CardContent className="p-8 flex gap-5">
                   <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     {a.icon}
@@ -292,7 +292,7 @@ export default function AboutDSAC() {
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
         variants={stagger}
-        className="py-16 bg-card rounded-3xl px-8 md:px-16 my-6"
+        className="py-16 bg-white rounded-2xl px-8 md:px-16 my-6 card-shadow"
       >
         <motion.div variants={fadeUp} custom={0} className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Our Team</h2>
@@ -331,7 +331,7 @@ export default function AboutDSAC() {
               key={idx}
               variants={fadeUp}
               custom={idx + 1}
-              className="flex items-center gap-4 bg-card/50 border border-border/50 rounded-2xl p-6 hover:bg-card hover:shadow-sm transition-all"
+              className="flex items-center gap-4 bg-white border border-border/30 rounded-2xl p-6 hover:shadow-md card-shadow transition-all"
             >
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                 {v.icon}
@@ -348,7 +348,7 @@ export default function AboutDSAC() {
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
         variants={stagger}
-        className="py-24 bg-secondary rounded-3xl px-8 text-center text-secondary-foreground relative overflow-hidden mt-6"
+        className="py-24 gradient-blue rounded-2xl px-8 text-center text-white relative overflow-hidden mt-6 card-shadow-lg"
       >
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-20"></div>
@@ -379,7 +379,7 @@ export default function AboutDSAC() {
           <motion.div variants={fadeUp} custom={3} className="flex flex-col sm:flex-row justify-center gap-4">
             <Button
               size="lg"
-              className="bg-white text-secondary hover:bg-white/90 rounded-full px-10 h-14 text-lg font-bold shadow-xl transition-transform hover:scale-105"
+              className="bg-white text-primary hover:bg-white/90 rounded-xl px-10 h-14 text-lg font-bold shadow-xl transition-transform hover:scale-105"
             >
               Join the Community <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
