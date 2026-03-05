@@ -112,6 +112,7 @@ export const submitDailyQuestion = async (req: AuthRequest, res: Response): Prom
 
         // Mark as solved
         question.solvedUsers.push(userId);
+        question.solvedEntries.push({ userId, solvedAt: new Date() });
         await question.save();
 
         // Add to user's solved list
@@ -177,6 +178,7 @@ export const checkSolvedStatus = async (req: AuthRequest, res: Response): Promis
             if (solved) {
                 // Auto-award XP
                 question.solvedUsers.push(userId);
+                question.solvedEntries.push({ userId, solvedAt: new Date() });
                 await question.save();
 
                 user.solvedDailyQuestions.push(question._id as any);

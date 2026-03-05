@@ -1,5 +1,10 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+export interface ISolvedEntry {
+    userId: mongoose.Types.ObjectId;
+    solvedAt: Date;
+}
+
 export interface IDailyQuestion extends Document {
     questionId: string;
     title: string;
@@ -9,6 +14,7 @@ export interface IDailyQuestion extends Document {
     hints: string[];
     date: Date;
     solvedUsers: mongoose.Types.ObjectId[];
+    solvedEntries: ISolvedEntry[];
     xpReward: number;
     topicTags: string[];
     createdAt: Date;
@@ -32,6 +38,12 @@ const dailyQuestionSchema = new Schema<IDailyQuestion>(
         hints: [{ type: String }],
         date: { type: Date, required: true },
         solvedUsers: [{ type: Schema.Types.ObjectId, ref: "User" }],
+        solvedEntries: [
+            {
+                userId: { type: Schema.Types.ObjectId, ref: "User" },
+                solvedAt: { type: Date, default: Date.now },
+            },
+        ],
         xpReward: { type: Number, default: 10 },
         topicTags: [{ type: String }],
     },
