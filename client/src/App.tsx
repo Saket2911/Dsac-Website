@@ -3,6 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
 import { Layout } from "@/components/Layout";
 import { ScrollToTop } from "@/components/ScrollToTop";
@@ -16,8 +17,23 @@ import Events from "@/pages/Events";
 import Resources from "@/pages/Resources";
 import Profile from "@/pages/Profile";
 import AboutDSAC from "@/pages/AboutDSAC";
+import AuthPage from "@/pages/AuthPage";
 
-function Router() {
+function AppRoutes() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <AuthPage />;
+  }
+
   return (
     <>
       <ScrollToTop />
@@ -44,8 +60,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Router />
+        <AuthProvider>
+          <Toaster />
+          <AppRoutes />
+        </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

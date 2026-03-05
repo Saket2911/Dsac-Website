@@ -1,12 +1,14 @@
 import { Link, useLocation } from "wouter";
-import { Menu, X, User, Trophy, Code, Target, Calendar, FolderOpen, LayoutDashboard, Info } from "lucide-react";
+import { Menu, X, User, Trophy, Code, Target, Calendar, FolderOpen, LayoutDashboard, Info, LogOut } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { useAuth } from "@/hooks/useAuth";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isAuthenticated, logout } = useAuth();
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -71,7 +73,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   </DropdownMenuItem>
                 </Link>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive">
+                <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive" onClick={logout}>
+                  <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -120,6 +123,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <Link href="/profile">
                 <Button className="bg-primary w-full text-primary-foreground mt-2" onClick={() => setIsMobileMenuOpen(false)}>Profile</Button>
               </Link>
+              {isAuthenticated && (
+                <Button variant="ghost" className="w-full text-destructive hover:bg-destructive/10 mt-1 gap-2" onClick={() => { logout(); setIsMobileMenuOpen(false); }}>
+                  <LogOut className="w-4 h-4" /> Log out
+                </Button>
+              )}
             </nav>
           </div>
         )}

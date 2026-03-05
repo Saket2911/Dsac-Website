@@ -1,7 +1,10 @@
+import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import connectDB from "./config/db.js";
+import { initCronJobs } from "./cronJobs/index.js";
 
 const app = express();
 const httpServer = createServer(app);
@@ -49,7 +52,7 @@ app.use((req, res, next) => {
     if (path.startsWith("/api")) {
       let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
       if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+        logLine += ` :: ${JSON.stringify(capturedJsonResponse).substring(0, 200)}`;
       }
 
       log(logLine);
@@ -61,7 +64,14 @@ app.use((req, res, next) => {
 
 // initialization logic that can run on import (serverless) or when starting locally
 async function init() {
+  // Connect to MongoDB
+  await connectDB();
+
+  // Register API routes
   await registerRoutes(httpServer, app);
+
+  // Initialize cron jobs
+  initCronJobs();
 
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
@@ -94,7 +104,7 @@ init().catch((err) => {
 
 // only listen on a local port when running outside of a serverless environment
 if (!process.env.VERCEL) {
-  const port = 3001;
+  const port = parseInt(process.env.PORT || "3001", 10);
   const listenOptions: any = { port, host: "127.0.0.1" };
 
   httpServer.listen(listenOptions, () => {
