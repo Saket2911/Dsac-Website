@@ -342,57 +342,6 @@ export default function AboutDSAC() {
         </div>
       </motion.section>
 
-      {/* ── How to Get Involved (CTA) ── */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-        variants={stagger}
-        className="py-24 bg-secondary rounded-3xl px-8 text-center text-secondary-foreground relative overflow-hidden mt-6"
-      >
-        <div className="absolute top-0 right-0 w-64 h-64 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-20"></div>
-
-        <div className="relative z-10 max-w-3xl mx-auto">
-          <motion.h2 variants={fadeUp} custom={0} className="text-4xl md:text-5xl font-bold mb-6 text-white">
-            Get Involved
-          </motion.h2>
-          <motion.p variants={fadeUp} custom={1} className="text-lg md:text-xl text-white/80 mb-10">
-            Ready to be part of the journey? Here's how you can join us.
-          </motion.p>
-
-          <motion.div variants={fadeUp} custom={2} className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto text-left mb-10">
-            {[
-              { icon: <CheckCircle className="w-5 h-5" />, text: "Join through recruitment drives" },
-              { icon: <GitBranch className="w-5 h-5" />, text: "Follow our GitHub organization" },
-              { icon: <MessageCircle className="w-5 h-5" />, text: "Join our Discord server" },
-              { icon: <Calendar className="w-5 h-5" />, text: "Attend weekly sessions" },
-              { icon: <Mail className="w-5 h-5" />, text: "Contact via email" },
-            ].map((item, idx) => (
-              <div key={idx} className="flex items-center gap-3 text-white/90">
-                {item.icon}
-                <span className="font-medium">{item.text}</span>
-              </div>
-            ))}
-          </motion.div>
-
-          <motion.div variants={fadeUp} custom={3} className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button
-              size="lg"
-              className="bg-white text-secondary hover:bg-white/90 rounded-full px-10 h-14 text-lg font-bold shadow-xl transition-transform hover:scale-105"
-            >
-              Join the Community <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white/30 text-white hover:bg-white/10 rounded-full px-10 h-14 text-lg font-bold transition-transform hover:scale-105"
-            >
-              <Mail className="mr-2 w-5 h-5" /> Contact Us
-            </Button>
-          </motion.div>
-        </div>
-      </motion.section>
     </div>
   );
 }

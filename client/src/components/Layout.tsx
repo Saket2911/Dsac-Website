@@ -76,9 +76,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button className="bg-primary hover:bg-secondary text-primary-foreground font-medium px-6 rounded-full transition-all duration-300 shadow-[0_4px_14px_rgba(198,167,94,0.3)] hover:shadow-[0_6px_20px_rgba(168,137,61,0.4)]">
-              Join Now
-            </Button>
+            <Link href="/profile">
+              <Button className="bg-primary hover:bg-secondary text-primary-foreground font-medium px-6 rounded-full transition-all duration-300 shadow-[0_4px_14px_rgba(198,167,94,0.3)] hover:shadow-[0_6px_20px_rgba(168,137,61,0.4)]">
+                Profile
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -115,7 +117,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   <User className="w-4 h-4 mr-2" /> Profile
                 </a>
               </Link>
-              <Button className="bg-primary w-full text-primary-foreground mt-2">Join Now</Button>
+              <Link href="/profile">
+                <Button className="bg-primary w-full text-primary-foreground mt-2" onClick={() => setIsMobileMenuOpen(false)}>Profile</Button>
+              </Link>
             </nav>
           </div>
         )}

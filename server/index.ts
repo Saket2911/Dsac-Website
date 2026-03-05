@@ -59,7 +59,8 @@ app.use((req, res, next) => {
   next();
 });
 
-(async () => {
+// initialization logic that can run on import (serverless) or when starting locally
+async function init() {
   await registerRoutes(httpServer, app);
 
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
@@ -84,12 +85,22 @@ app.use((req, res, next) => {
     const { setupVite } = await import("./vite");
     await setupVite(httpServer, app);
   }
+}
 
-  // Listen on a fixed localhost port for local development.
+// always run initialization; serverless runtimes can reuse the initialized app
+init().catch((err) => {
+  console.error("error during initialization", err);
+});
+
+// only listen on a local port when running outside of a serverless environment
+if (!process.env.VERCEL) {
   const port = 3001;
   const listenOptions: any = { port, host: "127.0.0.1" };
 
   httpServer.listen(listenOptions, () => {
     log(`serving on http://127.0.0.1:${port}`);
   });
-})();
+}
+
+// export the express app for serverless handlers and testing
+export default app;

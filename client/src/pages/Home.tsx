@@ -1,46 +1,51 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Code, Trophy, Users, Terminal, BookOpen, Target } from "lucide-react";
+import { Code, Trophy, Users, Terminal, BookOpen, Target } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Home() {
   return (
     <div className="flex flex-col pb-20">
       {/* Hero Section */}
-      <section className="py-20 md:py-32 flex flex-col-reverse md:flex-row items-center gap-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
-        <div className="flex-1 flex flex-col items-start gap-6 text-center md:text-left">
-          <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary transition-colors hover:bg-primary/10">
-            <span className="flex h-2 w-2 rounded-full bg-primary mr-2"></span>
-            Welcome to the new platform
-          </div>
+      <section className="py-20 md:py-32 flex flex-col items-center gap-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
+        {/* Logo & College Branding */}
+        <div className="relative flex flex-col items-center">
+          <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent blur-3xl rounded-full w-3/4 h-3/4 m-auto -z-10 animate-pulse" style={{ animationDuration: '4s' }}></div>
+          <img
+            src="/dsac-logo.png"
+            alt="DSaC Logo"
+            className="w-32 h-32 md:w-44 md:h-44 object-contain drop-shadow-[0_20px_50px_rgba(198,167,94,0.2)] mb-6"
+          />
+        </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold leading-tight text-foreground">
-            Learn. Build. <br />
-            <span className="text-primary italic">Elevate.</span>
-          </h1>
-
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed">
-            The Data Structures and Algorithms Club (DSAC) is your gateway to mastering problem-solving, collaborative coding, and building a strong technical mindset.
+        <div className="flex flex-col items-center text-center gap-4">
+          <p className="text-sm md:text-base uppercase tracking-[0.25em] text-primary font-semibold">
+            Vasavi College Of Engineering
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-4">
-            <Button size="lg" className="bg-primary hover:bg-secondary text-white rounded-full px-8 h-14 text-base shadow-[0_4px_20px_rgba(198,167,94,0.3)] hover:shadow-[0_8px_30px_rgba(168,137,61,0.4)] transition-all">
-              Join the Community
-            </Button>
+          <h1 className="text-4xl md:text-6xl font-bold leading-tight text-foreground">
+            Data Structures &amp; Algorithms Club
+          </h1>
+
+          <p className="text-xl md:text-2xl font-medium text-primary/80 italic">
+            Learn. Build. Elevate.
+          </p>
+
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed mt-2">
+            Your gateway to mastering problem-solving, collaborative coding, and building a strong technical mindset.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-6">
+            <Link href="/about">
+              <Button size="lg" className="bg-primary hover:bg-secondary text-white rounded-full px-8 h-14 text-base shadow-[0_4px_20px_rgba(198,167,94,0.3)] hover:shadow-[0_8px_30px_rgba(168,137,61,0.4)] transition-all">
+                Learn More
+              </Button>
+            </Link>
             <Link href="/events">
               <Button size="lg" variant="outline" className="rounded-full px-8 h-14 text-base border-primary/20 hover:bg-primary/5 hover:text-primary transition-all">
                 Explore Events
               </Button>
             </Link>
           </div>
-        </div>
-
-        <div className="flex-1 relative flex justify-center">
-          <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent blur-3xl rounded-full w-3/4 h-3/4 m-auto -z-10 animate-pulse" style={{ animationDuration: '4s' }}></div>
-          <img
-            src="/dsac-logo.png"
-            alt="DSaC Large Logo"
-            className="w-64 h-64 md:w-96 md:h-96 object-contain drop-shadow-[0_20px_50px_rgba(198,167,94,0.2)]"
-          />
         </div>
       </section>
 
@@ -117,21 +122,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 bg-secondary rounded-3xl px-8 text-center text-secondary-foreground relative overflow-hidden mt-10">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-20"></div>
 
-        <div className="relative z-10 max-w-3xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Ready to start your journey?</h2>
-          <p className="text-lg md:text-xl text-white/80 mb-10">
-            Join hundreds of other students who are building the future together at DSaC.
-          </p>
-          <Button size="lg" className="bg-white text-secondary hover:bg-white/90 rounded-full px-10 h-14 text-lg font-bold shadow-xl transition-transform hover:scale-105">
-            Become a Member <ArrowRight className="ml-2 w-5 h-5" />
-          </Button>
-        </div>
-      </section>
     </div>
   );
 }
