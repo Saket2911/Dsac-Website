@@ -38,6 +38,8 @@ export interface IUser extends Document {
     name: string;
     email: string;
     password: string;
+    role: "student" | "admin";
+    profilePicture: string;
     college: string;
     platformIds: IPlatformIds;
     xp: number;
@@ -54,6 +56,8 @@ const userSchema = new Schema<IUser>(
         name: { type: String, required: true, trim: true },
         email: { type: String, required: true, unique: true, lowercase: true, trim: true },
         password: { type: String, required: true, minlength: 6 },
+        role: { type: String, enum: ["student", "admin"], default: "student" },
+        profilePicture: { type: String, default: "" },
         college: { type: String, default: "" },
         platformIds: {
             leetcodeId: { type: String, default: "" },
@@ -89,6 +93,10 @@ userSchema.set("toJSON", {
         return ret;
     },
 });
+
+// Performance indexes
+userSchema.index({ xp: -1 });
+userSchema.index({ role: 1 });
 
 const User = mongoose.model<IUser>("User", userSchema);
 export default User;

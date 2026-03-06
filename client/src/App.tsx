@@ -18,6 +18,8 @@ import Resources from "@/pages/Resources";
 import Profile from "@/pages/Profile";
 import AboutDSAC from "@/pages/AboutDSAC";
 import AuthPage from "@/pages/AuthPage";
+import AdminDashboard from "@/pages/AdminDashboard";
+import UserProfile from "@/pages/UserProfile";
 
 function AppRoutes() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -49,6 +51,8 @@ function AppRoutes() {
           <Route path="/events" component={Events} />
           <Route path="/resources" component={Resources} />
           <Route path="/profile" component={Profile} />
+          <Route path="/admin" component={AdminDashboard} />
+          <Route path="/user/:id" component={UserProfile} />
           <Route component={NotFound} />
         </Switch>
       </Layout>

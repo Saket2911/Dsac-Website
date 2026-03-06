@@ -1,184 +1,133 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Search,
-  FileText,
-  Video,
-  Link as LinkIcon,
   FolderOpen,
+  ChevronDown,
   ChevronRight,
   ExternalLink,
   Youtube,
   Globe,
+  BookOpen,
+  Loader2,
+  Play,
 } from "lucide-react";
 
-interface Resource {
+interface Topic {
+  _id: string;
   title: string;
-  type: "document" | "video" | "link";
-  category: string;
-  date: string;
-  size: string;
-  url: string;
+  youtubePlaylistId: string;
+  difficulty: string;
+  order: number;
+  gfgArticleUrl?: string;
+  documentationLinks?: string[];
+}
+
+interface ResourcePathData {
+  _id: string;
+  title: string;
+  description: string;
+  topics: Topic[];
+}
+
+interface VideoItem {
+  title: string;
+  description: string;
+  thumbnail: string;
+  videoId: string;
+  videoUrl: string;
+  position: number;
 }
 
 export default function Resources() {
-  const categories = ["All", "Roadmaps", "Cheatsheets", "Workshop Materials", "Interview Prep"];
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [paths, setPaths] = useState<ResourcePathData[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [expandedPath, setExpandedPath] = useState<string | null>(null);
+  const [expandedTopic, setExpandedTopic] = useState<string | null>(null);
+  const [topicVideos, setTopicVideos] = useState<Record<string, VideoItem[]>>({});
+  const [loadingVideos, setLoadingVideos] = useState<string | null>(null);
 
-  const resources: Resource[] = [
-    {
-      title: "Complete MERN Stack Roadmap",
-      type: "link",
-      category: "Roadmaps",
-      date: "Sep 2023",
-      size: "External",
-      url: "https://www.google.com/search?q=MERN+stack+developer+roadmap",
-    },
-    {
-      title: "React Hooks Cheatsheet",
-      type: "link",
-      category: "Cheatsheets",
-      date: "Oct 2023",
-      size: "External",
-      url: "https://www.google.com/search?q=React+hooks+cheatsheet",
-    },
-    {
-      title: "Git & GitHub Crash Course",
-      type: "video",
-      category: "Workshop Materials",
-      date: "Aug 2023",
-      size: "Video",
-      url: "https://www.youtube.com/results?search_query=Git+and+GitHub+crash+course",
-    },
-    {
-      title: "Top 50 System Design Questions",
-      type: "link",
-      category: "Interview Prep",
-      date: "Jul 2023",
-      size: "External",
-      url: "https://www.google.com/search?q=Top+50+system+design+interview+questions",
-    },
-    {
-      title: "Tailwind CSS Utility Guide",
-      type: "link",
-      category: "Cheatsheets",
-      date: "Oct 2023",
-      size: "External",
-      url: "https://tailwindcss.com/docs",
-    },
-    {
-      title: "Introduction to Docker",
-      type: "video",
-      category: "Workshop Materials",
-      date: "Sep 2023",
-      size: "Video",
-      url: "https://www.youtube.com/results?search_query=Introduction+to+Docker+tutorial",
-    },
-    {
-      title: "DSA Roadmap for Beginners",
-      type: "link",
-      category: "Roadmaps",
-      date: "Nov 2023",
-      size: "External",
-      url: "https://www.google.com/search?q=DSA+roadmap+for+beginners",
-    },
-    {
-      title: "Dynamic Programming Patterns",
-      type: "video",
-      category: "Interview Prep",
-      date: "Dec 2023",
-      size: "Video",
-      url: "https://www.youtube.com/results?search_query=Dynamic+Programming+patterns+tutorial",
-    },
-    {
-      title: "Full Stack Development Roadmap 2024",
-      type: "link",
-      category: "Roadmaps",
-      date: "Jan 2024",
-      size: "External",
-      url: "https://www.google.com/search?q=Full+stack+developer+roadmap+2024",
-    },
-    {
-      title: "Behavioral Interview Prep Guide",
-      type: "link",
-      category: "Interview Prep",
-      date: "Feb 2024",
-      size: "External",
-      url: "https://www.google.com/search?q=behavioral+interview+questions+for+software+engineers",
-    },
-    {
-      title: "Node.js Best Practices",
-      type: "video",
-      category: "Workshop Materials",
-      date: "Mar 2024",
-      size: "Video",
-      url: "https://www.youtube.com/results?search_query=Node.js+best+practices+2024",
-    },
-    {
-      title: "SQL vs NoSQL Databases",
-      type: "link",
-      category: "Cheatsheets",
-      date: "Apr 2024",
-      size: "External",
-      url: "https://www.google.com/search?q=SQL+vs+NoSQL+comparison+guide",
-    },
-  ];
+  useEffect(() => {
+    fetch("/api/resources")
+      .then((res) => res.json())
+      .then((data) => setPaths(data.paths || []))
+      .catch(() => setPaths([]))
+      .finally(() => setLoading(false));
+  }, []);
 
-  const filteredResources = resources.filter((r) => {
-    const matchCategory = activeCategory === "All" || r.category === activeCategory;
-    const matchSearch =
+  const fetchVideos = async (playlistId: string) => {
+    if (topicVideos[playlistId]) return;
+    setLoadingVideos(playlistId);
+    try {
+      const res = await fetch(`/api/resources/topic/${playlistId}/videos`);
+      const data = await res.json();
+      setTopicVideos((prev) => ({ ...prev, [playlistId]: data.videos || [] }));
+    } catch {
+      setTopicVideos((prev) => ({ ...prev, [playlistId]: [] }));
+    }
+    setLoadingVideos(null);
+  };
+
+  const togglePath = (id: string) => {
+    setExpandedPath(expandedPath === id ? null : id);
+  };
+
+  const toggleTopic = (topicId: string, playlistId: string) => {
+    if (expandedTopic === topicId) {
+      setExpandedTopic(null);
+    } else {
+      setExpandedTopic(topicId);
+      if (playlistId) fetchVideos(playlistId);
+    }
+  };
+
+  const difficultyColor = (d: string) => {
+    switch (d) {
+      case "beginner": return "text-green-500 bg-green-500/10 border-green-500/30";
+      case "intermediate": return "text-amber-500 bg-amber-500/10 border-amber-500/30";
+      case "advanced": return "text-red-500 bg-red-500/10 border-red-500/30";
+      default: return "text-muted-foreground";
+    }
+  };
+
+  const pathIcon = (title: string) => {
+    if (title.toLowerCase().includes("data structure")) return "🏗️";
+    if (title.toLowerCase().includes("algorithm")) return "⚡";
+    if (title.toLowerCase().includes("competitive")) return "🏆";
+    return "📚";
+  };
+
+  // Filter paths/topics by search
+  const filteredPaths = paths.map((p) => ({
+    ...p,
+    topics: p.topics.filter((t) =>
       searchQuery === "" ||
-      r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.category.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchCategory && matchSearch;
-  });
-
-  const getIcon = (type: string) => {
-    switch (type) {
-      case "document":
-        return <FileText className="w-6 h-6 text-blue-500" />;
-      case "video":
-        return <Youtube className="w-6 h-6 text-red-500" />;
-      case "link":
-        return <Globe className="w-6 h-6 text-green-500" />;
-      default:
-        return <FileText className="w-6 h-6 text-muted-foreground" />;
-    }
-  };
-
-  const getActionIcon = (type: string) => {
-    switch (type) {
-      case "video":
-        return <Youtube className="w-5 h-5" />;
-      default:
-        return <ExternalLink className="w-5 h-5" />;
-    }
-  };
-
-  const handleResourceClick = (resource: Resource) => {
-    window.open(resource.url, "_blank", "noopener,noreferrer");
-  };
+      t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.title.toLowerCase().includes(searchQuery.toLowerCase())
+    ),
+  })).filter((p) => p.topics.length > 0 || searchQuery === "");
 
   return (
     <div className="py-10 space-y-10 animate-in fade-in duration-500">
+      {/* Hero */}
       <div className="bg-card border border-border/50 rounded-3xl p-8 md:p-12 text-center space-y-6 relative overflow-hidden">
         <div className="absolute top-0 right-0 p-8 opacity-5">
           <FolderOpen className="w-48 h-48" />
         </div>
         <div className="relative z-10 max-w-3xl mx-auto space-y-6">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground">Resource Library</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground">Learning Paths</h1>
           <p className="text-muted-foreground text-lg">
-            Curated materials, roadmaps, and recorded sessions to support your learning journey.
+            Structured learning paths with YouTube tutorials, GeeksforGeeks articles, and reference documentation.
           </p>
           <div className="relative max-w-xl mx-auto mt-8">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="Search for resources..."
+              placeholder="Search topics..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-12 pr-4 py-6 rounded-full bg-background border-border shadow-sm text-base focus-visible:ring-primary"
@@ -187,112 +136,191 @@ export default function Resources() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Categories Sidebar */}
-        <div className="lg:col-span-1 space-y-4">
-          <h3 className="font-serif font-bold text-lg px-2">Categories</h3>
-          <div className="flex flex-col gap-1">
-            {categories.map((category) => (
-              <Button
-                key={category}
-                variant={activeCategory === category ? "secondary" : "ghost"}
-                className={`justify-start w-full ${activeCategory === category
-                    ? "bg-primary/10 text-primary font-bold"
-                    : "text-foreground/80 hover:text-foreground"
-                  }`}
-                onClick={() => setActiveCategory(category)}
-              >
-                {category}
-              </Button>
-            ))}
-          </div>
-
-          <Card className="border-border/50 shadow-sm mt-8 bg-gradient-to-b from-card to-background">
-            <CardContent className="p-6 text-center space-y-4">
-              <div className="w-12 h-12 rounded-full bg-primary/20 mx-auto flex items-center justify-center">
-                <span className="text-xl">💡</span>
-              </div>
-              <h4 className="font-bold">Contribute</h4>
-              <p className="text-sm text-muted-foreground">
-                Have a great resource to share with the community?
-              </p>
-              <Button
-                variant="outline"
-                className="w-full border-primary/50 text-primary hover:bg-primary/5"
-              >
-                Submit Resource
-              </Button>
-            </CardContent>
-          </Card>
+      {/* Loading */}
+      {loading ? (
+        <div className="flex items-center justify-center py-16">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <span className="ml-3 text-muted-foreground">Loading learning paths...</span>
         </div>
-
-        {/* Resources List */}
-        <div className="lg:col-span-3 space-y-4">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-serif font-bold text-foreground">
-              {activeCategory === "All" ? "All Resources" : activeCategory}
-            </h2>
-            <span className="text-sm text-muted-foreground">
-              Showing {filteredResources.length} result{filteredResources.length !== 1 ? "s" : ""}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredResources.map((resource, idx) => (
-              <Card
-                key={idx}
-                className="border-border/50 shadow-sm hover:shadow-md transition-all group cursor-pointer"
-                onClick={() => handleResourceClick(resource)}
+      ) : filteredPaths.length === 0 ? (
+        <div className="text-center py-12">
+          <BookOpen className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-foreground">No resources found</h3>
+          <p className="text-muted-foreground mt-1">
+            {searchQuery ? "Try a different search term." : "Resources haven't been configured yet. Run the seed script."}
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-6 max-w-5xl mx-auto">
+          {filteredPaths.map((path) => (
+            <Card key={path._id} className="border-border/50 shadow-sm overflow-hidden">
+              {/* Path Header */}
+              <button
+                className="w-full p-6 flex items-center justify-between gap-4 hover:bg-muted/20 transition-colors text-left"
+                onClick={() => togglePath(path._id)}
               >
-                <CardContent className="p-5 flex gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-background border border-border/50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                    {getIcon(resource.type)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <Badge
-                      variant="secondary"
-                      className="mb-2 text-[10px] bg-secondary/10 text-secondary border-none"
-                    >
-                      {resource.category}
+                <div className="flex items-center gap-4">
+                  <div className="text-4xl">{pathIcon(path.title)}</div>
+                  <div>
+                    <h2 className="text-xl font-bold text-foreground">{path.title}</h2>
+                    <p className="text-sm text-muted-foreground mt-1">{path.description}</p>
+                    <Badge variant="secondary" className="mt-2 text-[10px]">
+                      {path.topics.length} topics
                     </Badge>
-                    <h3 className="font-bold text-foreground truncate group-hover:text-primary transition-colors">
-                      {resource.title}
-                    </h3>
-                    <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground font-medium">
-                      <span>{resource.date}</span>
-                      <span>•</span>
-                      <span className="inline-flex items-center gap-1">
-                        {resource.type === "video" ? (
-                          <><Youtube className="w-3 h-3 text-red-500" /> YouTube</>
-                        ) : (
-                          <><Globe className="w-3 h-3 text-green-500" /> Web</>
-                        )}
-                      </span>
-                    </div>
                   </div>
-                  <div className="flex items-center justify-center shrink-0 pl-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-primary"
-                    >
-                      {getActionIcon(resource.type)}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                </div>
+                {expandedPath === path._id ? (
+                  <ChevronDown className="w-5 h-5 text-muted-foreground shrink-0" />
+                ) : (
+                  <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+                )}
+              </button>
 
-          {filteredResources.length === 0 && (
-            <div className="text-center py-12">
-              <Search className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-foreground">No resources found</h3>
-              <p className="text-muted-foreground mt-1">Try a different search or category.</p>
-            </div>
-          )}
+              {/* Topics List */}
+              {expandedPath === path._id && (
+                <div className="border-t border-border/40">
+                  {path.topics
+                    .sort((a, b) => a.order - b.order)
+                    .map((topic, idx) => (
+                      <div key={topic._id} className="border-b border-border/20 last:border-b-0">
+                        {/* Topic row */}
+                        <button
+                          className="w-full px-6 py-4 flex items-center justify-between gap-4 hover:bg-muted/10 transition-colors text-left"
+                          onClick={() => toggleTopic(topic._id, topic.youtubePlaylistId)}
+                        >
+                          <div className="flex items-center gap-4">
+                            <span className="text-sm font-mono text-muted-foreground w-6">{idx + 1}.</span>
+                            <div>
+                              <h3 className="font-semibold text-foreground">{topic.title}</h3>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Badge variant="outline" className={`text-[10px] capitalize ${difficultyColor(topic.difficulty)}`}>
+                                  {topic.difficulty}
+                                </Badge>
+                                {topic.youtubePlaylistId && (
+                                  <span className="inline-flex items-center gap-1 text-[10px] text-red-500">
+                                    <Youtube className="w-3 h-3" /> Playlist
+                                  </span>
+                                )}
+                                {topic.gfgArticleUrl && (
+                                  <span className="inline-flex items-center gap-1 text-[10px] text-green-500">
+                                    <Globe className="w-3 h-3" /> GFG
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          {expandedTopic === topic._id ? (
+                            <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+                          ) : (
+                            <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                          )}
+                        </button>
+
+                        {/* Topic content expanded */}
+                        {expandedTopic === topic._id && (
+                          <div className="px-6 pb-4 space-y-4 bg-muted/5">
+                            {/* Links */}
+                            <div className="flex flex-wrap gap-3 pt-2">
+                              {topic.youtubePlaylistId && (
+                                <a
+                                  href={`https://www.youtube.com/playlist?list=${topic.youtubePlaylistId}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 text-red-500 text-sm font-medium hover:bg-red-500/20 transition-colors border border-red-500/20"
+                                >
+                                  <Youtube className="w-4 h-4" /> YouTube Playlist
+                                  <ExternalLink className="w-3 h-3" />
+                                </a>
+                              )}
+                              {topic.gfgArticleUrl && (
+                                <a
+                                  href={topic.gfgArticleUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 text-green-500 text-sm font-medium hover:bg-green-500/20 transition-colors border border-green-500/20"
+                                >
+                                  <Globe className="w-4 h-4" /> GeeksforGeeks
+                                  <ExternalLink className="w-3 h-3" />
+                                </a>
+                              )}
+                              {topic.documentationLinks?.map((link, i) => (
+                                <a
+                                  key={i}
+                                  href={link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 text-blue-500 text-sm font-medium hover:bg-blue-500/20 transition-colors border border-blue-500/20"
+                                >
+                                  <BookOpen className="w-4 h-4" /> Reference {i + 1}
+                                  <ExternalLink className="w-3 h-3" />
+                                </a>
+                              ))}
+                            </div>
+
+                            {/* Videos */}
+                            {topic.youtubePlaylistId && (
+                              <div>
+                                <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                                  <Play className="w-4 h-4 text-red-500" /> Playlist Videos
+                                </h4>
+                                {loadingVideos === topic.youtubePlaylistId ? (
+                                  <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground">
+                                    <Loader2 className="w-4 h-4 animate-spin" /> Loading videos...
+                                  </div>
+                                ) : (topicVideos[topic.youtubePlaylistId]?.length || 0) > 0 ? (
+                                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                    {topicVideos[topic.youtubePlaylistId].slice(0, 6).map((video, vi) => (
+                                      <a
+                                        key={vi}
+                                        href={video.videoUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="group rounded-lg border border-border/40 overflow-hidden hover:shadow-md transition-all bg-card"
+                                      >
+                                        {video.thumbnail && (
+                                          <div className="relative aspect-video overflow-hidden">
+                                            <img
+                                              src={video.thumbnail}
+                                              alt={video.title}
+                                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                            />
+                                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                                              <div className="bg-red-600 rounded-full p-2">
+                                                <Play className="w-4 h-4 text-white fill-white" />
+                                              </div>
+                                            </div>
+                                          </div>
+                                        )}
+                                        <div className="p-3">
+                                          <h5 className="text-xs font-semibold text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                                            {video.title}
+                                          </h5>
+                                        </div>
+                                      </a>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <p className="text-sm text-muted-foreground py-2">
+                                    No videos loaded. <a
+                                      href={`https://www.youtube.com/playlist?list=${topic.youtubePlaylistId}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-primary hover:underline"
+                                    >Watch on YouTube →</a>
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                </div>
+              )}
+            </Card>
+          ))}
         </div>
-      </div>
+      )}
     </div>
   );
 }

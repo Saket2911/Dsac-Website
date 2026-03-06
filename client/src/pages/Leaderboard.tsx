@@ -1,17 +1,20 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Medal, Crown, Loader2, Clock, CheckCircle2, XCircle, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { UserHoverCard } from "@/components/UserHoverCard";
 
 interface LeaderboardEntry {
   rank: number;
+  userId: string;
   name: string;
   email: string;
   xp: number;
   level: number;
+  profilePicture?: string;
   college?: string;
   solvedCount?: number;
   dailySolved?: number;
@@ -20,8 +23,12 @@ interface LeaderboardEntry {
 
 interface PlatformEntry {
   rank: number;
+  userId: string;
   name: string;
   email: string;
+  xp: number;
+  level: number;
+  profilePicture?: string;
   leetcode: number;
   codeforces: number;
   codechef: number;
@@ -177,13 +184,16 @@ export default function Leaderboard() {
             <div className="flex flex-col items-center animate-in slide-in-from-bottom-8 duration-700 delay-100">
               <div className="relative mb-2">
                 <Avatar className="h-16 w-16 border-4 border-slate-300">
+                  {top3[1].profilePicture ? <AvatarImage src={top3[1].profilePicture} /> : null}
                   <AvatarFallback className="bg-slate-100 text-slate-600 font-bold text-xl">{getInitials(top3[1].name)}</AvatarFallback>
                 </Avatar>
                 <div className="absolute -top-3 -right-3 bg-slate-200 rounded-full p-1 border border-slate-300 shadow-sm">
                   <Medal className="w-5 h-5 text-slate-500" />
                 </div>
               </div>
-              <div className="font-bold text-foreground text-sm md:text-base">{top3[1].name}</div>
+              <UserHoverCard userId={top3[1].userId} name={top3[1].name} xp={top3[1].xp} level={top3[1].level} profilePicture={top3[1].profilePicture} solvedCount={top3[1].solvedCount}>
+                <span className="font-bold text-foreground text-sm md:text-base">{top3[1].name}</span>
+              </UserHoverCard>
               <div className="text-xs text-muted-foreground font-medium mb-2">{top3[1].xp} XP</div>
               <div className="w-24 md:w-32 h-24 bg-gradient-to-t from-slate-200 to-slate-100 rounded-t-lg border-t-4 border-slate-300 flex items-center justify-center shadow-inner">
                 <span className="text-4xl font-serif font-bold text-slate-400">2</span>
@@ -197,10 +207,13 @@ export default function Leaderboard() {
                   <Crown className="w-8 h-8 fill-yellow-500" />
                 </div>
                 <Avatar className="h-20 w-20 border-4 border-yellow-400 ring-4 ring-yellow-400/20">
+                  {top3[0].profilePicture ? <AvatarImage src={top3[0].profilePicture} /> : null}
                   <AvatarFallback className="bg-yellow-100 text-yellow-700 font-bold text-2xl">{getInitials(top3[0].name)}</AvatarFallback>
                 </Avatar>
               </div>
-              <div className="font-bold text-foreground text-base md:text-lg">{top3[0].name}</div>
+              <UserHoverCard userId={top3[0].userId} name={top3[0].name} xp={top3[0].xp} level={top3[0].level} profilePicture={top3[0].profilePicture} solvedCount={top3[0].solvedCount}>
+                <span className="font-bold text-foreground text-base md:text-lg">{top3[0].name}</span>
+              </UserHoverCard>
               <div className="text-sm text-primary font-bold mb-2">{top3[0].xp} XP</div>
               <div className="w-28 md:w-36 h-32 bg-gradient-to-t from-yellow-200 to-yellow-100 rounded-t-lg border-t-4 border-yellow-400 flex items-center justify-center shadow-inner">
                 <span className="text-5xl font-serif font-bold text-yellow-600">1</span>
@@ -211,13 +224,16 @@ export default function Leaderboard() {
             <div className="flex flex-col items-center animate-in slide-in-from-bottom-6 duration-700 delay-200">
               <div className="relative mb-2">
                 <Avatar className="h-14 w-14 border-4 border-amber-600">
+                  {top3[2].profilePicture ? <AvatarImage src={top3[2].profilePicture} /> : null}
                   <AvatarFallback className="bg-amber-100 text-amber-800 font-bold">{getInitials(top3[2].name)}</AvatarFallback>
                 </Avatar>
                 <div className="absolute -top-3 -right-3 bg-amber-100 rounded-full p-1 border border-amber-600 shadow-sm">
                   <Medal className="w-4 h-4 text-amber-700" />
                 </div>
               </div>
-              <div className="font-bold text-foreground text-sm md:text-base">{top3[2].name}</div>
+              <UserHoverCard userId={top3[2].userId} name={top3[2].name} xp={top3[2].xp} level={top3[2].level} profilePicture={top3[2].profilePicture} solvedCount={top3[2].solvedCount}>
+                <span className="font-bold text-foreground text-sm md:text-base">{top3[2].name}</span>
+              </UserHoverCard>
               <div className="text-xs text-muted-foreground font-medium mb-2">{top3[2].xp} XP</div>
               <div className="w-24 md:w-32 h-16 bg-gradient-to-t from-amber-200 to-amber-100 rounded-t-lg border-t-4 border-amber-600 flex items-center justify-center shadow-inner">
                 <span className="text-3xl font-serif font-bold text-amber-700">3</span>
@@ -250,9 +266,12 @@ export default function Leaderboard() {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <Avatar className="h-8 w-8">
+                            {entry.profilePicture ? <AvatarImage src={entry.profilePicture} /> : null}
                             <AvatarFallback className="bg-primary/10 text-primary text-xs">{getInitials(entry.name)}</AvatarFallback>
                           </Avatar>
-                          <div className="font-semibold text-foreground">{entry.name}</div>
+                          <UserHoverCard userId={entry.userId} name={entry.name} xp={entry.xp} level={entry.level} profilePicture={entry.profilePicture} solvedCount={entry.solvedCount}>
+                            <span>{entry.name}</span>
+                          </UserHoverCard>
                           {user && entry.email === user.email && (
                             <Badge variant="outline" className="ml-2 bg-primary/10 text-primary border-primary/20 text-[10px]">You</Badge>
                           )}
@@ -311,9 +330,9 @@ export default function Leaderboard() {
                 <tr key={entry.rank} className="bg-card border-b border-border/40 hover:bg-muted/30 transition-colors">
                   <td className="px-4 py-4 font-medium">
                     <span className={`w-8 h-8 rounded-full flex items-center justify-center font-serif ${entry.rank === 1 ? "bg-yellow-100 text-yellow-700 font-bold" :
-                        entry.rank === 2 ? "bg-slate-100 text-slate-600 font-bold" :
-                          entry.rank === 3 ? "bg-amber-100 text-amber-700 font-bold" :
-                            "bg-background text-muted-foreground"
+                      entry.rank === 2 ? "bg-slate-100 text-slate-600 font-bold" :
+                        entry.rank === 3 ? "bg-amber-100 text-amber-700 font-bold" :
+                          "bg-background text-muted-foreground"
                       }`}>
                       {entry.rank <= 3 ? (
                         entry.rank === 1 ? <Crown className="w-4 h-4 text-yellow-500" /> :
@@ -324,9 +343,12 @@ export default function Leaderboard() {
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
+                        {entry.profilePicture ? <AvatarImage src={entry.profilePicture} /> : null}
                         <AvatarFallback className="bg-primary/10 text-primary text-xs">{getInitials(entry.name)}</AvatarFallback>
                       </Avatar>
-                      <div className="font-semibold text-foreground">{entry.name}</div>
+                      <UserHoverCard userId={entry.userId} name={entry.name} xp={entry.xp} level={entry.level} profilePicture={entry.profilePicture} solvedCount={entry.total}>
+                        <span>{entry.name}</span>
+                      </UserHoverCard>
                       {user && entry.email === user.email && (
                         <Badge variant="outline" className="ml-1 bg-primary/10 text-primary border-primary/20 text-[10px]">You</Badge>
                       )}
@@ -392,10 +414,10 @@ export default function Leaderboard() {
                 </div>
                 <Badge
                   className={`text-xs font-bold uppercase ${contest.status === "active"
-                      ? "bg-green-500 text-white animate-pulse"
-                      : contest.status === "upcoming"
-                        ? "bg-blue-500 text-white"
-                        : "bg-muted text-muted-foreground"
+                    ? "bg-green-500 text-white animate-pulse"
+                    : contest.status === "upcoming"
+                      ? "bg-blue-500 text-white"
+                      : "bg-muted text-muted-foreground"
                     }`}
                 >
                   {contest.status === "active" ? "🔴 LIVE" : contest.status === "upcoming" ? "Upcoming" : "Ended"}
@@ -417,9 +439,9 @@ export default function Leaderboard() {
                       <tr key={idx} className="border-b border-border/20 hover:bg-muted/20 transition-colors">
                         <td className="px-5 py-3 font-medium">
                           <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${entry.rank === 1 ? "bg-yellow-100 text-yellow-700" :
-                              entry.rank === 2 ? "bg-slate-100 text-slate-600" :
-                                entry.rank === 3 ? "bg-amber-100 text-amber-700" :
-                                  "bg-background text-muted-foreground"
+                            entry.rank === 2 ? "bg-slate-100 text-slate-600" :
+                              entry.rank === 3 ? "bg-amber-100 text-amber-700" :
+                                "bg-background text-muted-foreground"
                             }`}>
                             {entry.rank}
                           </span>

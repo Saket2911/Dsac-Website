@@ -39,6 +39,12 @@ export const updateProfile = async (req: AuthRequest, res: Response): Promise<vo
         if (name !== undefined) user.name = name.trim();
         if (college !== undefined) user.college = college.trim();
 
+        // Handle profile picture upload
+        const multerReq = req as any;
+        if (multerReq.file) {
+            user.profilePicture = `/uploads/${multerReq.file.filename}`;
+        }
+
         user.platformIds = {
             leetcodeId: leetcodeId ?? user.platformIds.leetcodeId,
             codeforcesId: codeforcesId ?? user.platformIds.codeforcesId,
@@ -69,6 +75,46 @@ export const getProfile = async (req: AuthRequest, res: Response): Promise<void>
         });
     } catch (error) {
         console.error("Get profile error:", error);
+        res.status(500).json({ message: "Server error fetching profile" });
+    }
+};
+
+export const getPublicProfile = async (req: import("express").Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+
+        const user = await User.findById(id)
+            .select("name email college profilePicture platformIds xp level statsCache solvedDailyQuestions contestsParticipated createdAt");
+
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        }
+
+        const totalSolved = (user.statsCache?.leetcode?.totalSolved || 0) +
+            (user.statsCache?.codeforces?.problemsSolved || 0) +
+            (user.statsCache?.codechef?.problemsSolved || 0) +
+            (user.statsCache?.hackerrank?.problemsSolved || 0);
+
+        res.json({
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                college: user.college,
+                profilePicture: user.profilePicture,
+                platformIds: user.platformIds,
+                xp: user.xp,
+                level: user.level,
+                totalSolved,
+                dailyQuestionsSolved: user.solvedDailyQuestions.length,
+                contestsParticipated: user.contestsParticipated.length,
+                statsCache: user.statsCache,
+                joinedAt: user.createdAt,
+            },
+        });
+    } catch (error) {
+        console.error("Get public profile error:", error);
         res.status(500).json({ message: "Server error fetching profile" });
     }
 };

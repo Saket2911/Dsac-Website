@@ -4,6 +4,8 @@ interface User {
     _id: string;
     name: string;
     email: string;
+    role: string;
+    profilePicture: string;
     college: string;
     platformIds: {
         leetcodeId?: string;

@@ -6,17 +6,19 @@ import DailyQuestion from "../models/DailyQuestion.js";
 export const getXpLeaderboard = async (_req: Request, res: Response): Promise<void> => {
     try {
         const users = await User.find()
-            .select("name email xp level college platformIds statsCache")
+            .select("name email xp level college profilePicture platformIds statsCache")
             .sort({ xp: -1 })
             .limit(50);
 
         const leaderboard = users.map((user, index) => ({
             rank: index + 1,
+            userId: user._id,
             name: user.name,
             email: user.email,
             xp: user.xp,
             level: user.level,
             college: user.college,
+            profilePicture: user.profilePicture || "",
             solvedCount: user.statsCache?.leetcode?.totalSolved || 0,
         }));
 
@@ -30,7 +32,7 @@ export const getXpLeaderboard = async (_req: Request, res: Response): Promise<vo
 export const getDailyLeaderboard = async (_req: Request, res: Response): Promise<void> => {
     try {
         const users = await User.find()
-            .select("name email xp level solvedDailyQuestions")
+            .select("name email xp level profilePicture solvedDailyQuestions")
             .sort({ "solvedDailyQuestions": -1 })
             .limit(50);
 
@@ -38,10 +40,12 @@ export const getDailyLeaderboard = async (_req: Request, res: Response): Promise
             .sort((a, b) => b.solvedDailyQuestions.length - a.solvedDailyQuestions.length)
             .map((user, index) => ({
                 rank: index + 1,
+                userId: user._id,
                 name: user.name,
                 email: user.email,
                 xp: user.xp,
                 level: user.level,
+                profilePicture: user.profilePicture || "",
                 dailySolved: user.solvedDailyQuestions.length,
             }));
 
@@ -55,7 +59,7 @@ export const getDailyLeaderboard = async (_req: Request, res: Response): Promise
 export const getContestLeaderboard = async (_req: Request, res: Response): Promise<void> => {
     try {
         const users = await User.find()
-            .select("name email xp level contestsParticipated")
+            .select("name email xp level profilePicture contestsParticipated")
             .sort({ "contestsParticipated": -1 })
             .limit(50);
 
@@ -63,10 +67,12 @@ export const getContestLeaderboard = async (_req: Request, res: Response): Promi
             .sort((a, b) => b.contestsParticipated.length - a.contestsParticipated.length)
             .map((user, index) => ({
                 rank: index + 1,
+                userId: user._id,
                 name: user.name,
                 email: user.email,
                 xp: user.xp,
                 level: user.level,
+                profilePicture: user.profilePicture || "",
                 contestsCount: user.contestsParticipated.length,
             }));
 
@@ -84,7 +90,7 @@ export const getContestLeaderboard = async (_req: Request, res: Response): Promi
 export const getPlatformLeaderboard = async (_req: Request, res: Response): Promise<void> => {
     try {
         const users = await User.find()
-            .select("name email xp level college platformIds statsCache")
+            .select("name email xp level college profilePicture platformIds statsCache")
             .limit(100);
 
         const leaderboard = users
@@ -95,11 +101,13 @@ export const getPlatformLeaderboard = async (_req: Request, res: Response): Prom
                 const total = lc + cf + cc;
 
                 return {
+                    userId: user._id,
                     name: user.name,
                     email: user.email,
                     xp: user.xp,
                     level: user.level,
                     college: user.college || "",
+                    profilePicture: user.profilePicture || "",
                     leetcode: lc,
                     codeforces: cf,
                     codechef: cc,

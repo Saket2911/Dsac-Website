@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Menu, X, User, Trophy, Code, Target, Calendar, FolderOpen, LayoutDashboard, Info, LogOut } from "lucide-react";
+import { Menu, X, User, Trophy, Code, Target, Calendar, FolderOpen, LayoutDashboard, Info, LogOut, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -72,6 +72,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     <span>Dashboard</span>
                   </DropdownMenuItem>
                 </Link>
+                {user?.role === "admin" && (
+                  <Link href="/admin">
+                    <DropdownMenuItem className="cursor-pointer">
+                      <ShieldCheck className="mr-2 h-4 w-4" />
+                      <span>Admin Dashboard</span>
+                    </DropdownMenuItem>
+                  </Link>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive" onClick={logout}>
                   <LogOut className="mr-2 h-4 w-4" />
@@ -120,6 +128,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   <User className="w-4 h-4 mr-2" /> Profile
                 </a>
               </Link>
+              {user?.role === "admin" && (
+                <Link href="/admin">
+                  <a
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`text-base font-medium px-4 py-3 rounded-lg transition-colors flex items-center ${location === "/admin" ? "bg-primary/10 text-primary" : "text-foreground/70 hover:bg-card hover:text-foreground"
+                      }`}
+                  >
+                    <ShieldCheck className="w-4 h-4 mr-2" /> Admin
+                  </a>
+                </Link>
+              )}
               <Link href="/profile">
                 <Button className="bg-primary w-full text-primary-foreground mt-2" onClick={() => setIsMobileMenuOpen(false)}>Profile</Button>
               </Link>

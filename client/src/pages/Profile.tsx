@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { Edit2, Medal, Code, Trophy, Target, Settings, LogOut, Loader2, Save, CheckCircle } from "lucide-react";
+import { Edit2, Medal, Code, Trophy, Target, Settings, LogOut, Loader2, Save, CheckCircle, Camera } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 interface PlatformStats {
@@ -48,6 +48,9 @@ export default function Profile() {
   const [editHackerrank, setEditHackerrank] = useState(user?.platformIds?.hackerrankId || "");
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
+  const [profilePicFile, setProfilePicFile] = useState<File | null>(null);
+  const [profilePicPreview, setProfilePicPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Sync form state when user changes
   useEffect(() => {
@@ -82,20 +85,23 @@ export default function Profile() {
     setSaving(true);
     setSaveMessage("");
     try {
+      const formData = new FormData();
+      formData.append("name", editName);
+      formData.append("college", editCollege);
+      formData.append("leetcodeId", editLeetcode);
+      formData.append("codeforcesId", editCodeforces);
+      formData.append("codechefId", editCodechef);
+      formData.append("hackerrankId", editHackerrank);
+      if (profilePicFile) {
+        formData.append("profilePicture", profilePicFile);
+      }
+
       const res = await fetch("/api/user/profile", {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          name: editName,
-          college: editCollege,
-          leetcodeId: editLeetcode,
-          codeforcesId: editCodeforces,
-          codechefId: editCodechef,
-          hackerrankId: editHackerrank,
-        }),
+        body: formData,
       });
       const data = await res.json();
       if (res.ok && data.user) {
@@ -139,10 +145,29 @@ export default function Profile() {
         </div>
 
         <div className="absolute -bottom-12 left-8 md:left-12 flex items-end gap-6">
-          <div className="relative">
+          <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
             <Avatar className="h-28 w-28 md:h-32 md:w-32 border-4 border-background bg-background shadow-xl">
+              {(profilePicPreview || user.profilePicture) ? (
+                <AvatarImage src={profilePicPreview || user.profilePicture} alt={user.name} />
+              ) : null}
               <AvatarFallback className="bg-primary/10 text-primary text-4xl font-serif">{initials}</AvatarFallback>
             </Avatar>
+            <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <Camera className="w-6 h-6 text-white" />
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/gif,image/webp"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setProfilePicFile(file);
+                  setProfilePicPreview(URL.createObjectURL(file));
+                }
+              }}
+            />
           </div>
           <div className="mb-2 hidden md:block pb-12">
             <h1 className="text-3xl font-bold text-foreground">{user.name}</h1>
