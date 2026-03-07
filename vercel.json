@@ -43,8 +43,20 @@
       "dest": "/backend/index.js"
     },
     {
+      "src": "/assets/(.*)",
+      "dest": "/client/assets/$1"
+    },
+    {
+      "src": "/vite.svg",
+      "dest": "/client/vite.svg"
+    },
+    {
+      "src": "/dsac-logo.png",
+      "dest": "/client/dsac-logo.png"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/client/index.html"
     }
   ]
 }
