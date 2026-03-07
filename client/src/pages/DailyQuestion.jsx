@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { Clock, Flame, Lightbulb, ExternalLink, CheckCircle, Loader2, AlertCircle, Trophy, Sparkles } from "lucide-react";
+import { Clock, Flame, Lightbulb, ExternalLink, CheckCircle, Loader2, AlertCircle, Trophy, Sparkles, Star } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 // const API_BASE = "http://localhost:3001";
 import API_BASE from "../config/api.js";
@@ -19,6 +19,9 @@ export default function DailyQuestion() {
   const [solvedState, setSolvedState] = useState("unsolved");
   const [xpAwarded, setXpAwarded] = useState(0);
   const [countdown, setCountdown] = useState("");
+  const [specialQuestions, setSpecialQuestions] = useState([]);
+  const [solvingSpecial, setSolvingSpecial] = useState(null);
+  const [specialError, setSpecialError] = useState("");
 
 
   // Fetch today's question
@@ -30,6 +33,16 @@ export default function DailyQuestion() {
         setError(data.message || "No daily question available");
       }
     }).catch(() => setError("Failed to load daily question")).finally(() => setLoading(false));
+  }, []);
+
+  // Fetch special questions
+  useEffect(() => {
+    fetch(`${API_BASE}/api/admin/special-questions`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.questions) setSpecialQuestions(data.questions);
+      })
+      .catch(() => { });
   }, []);
 
   // Auto-check if user already solved when question loads
@@ -56,7 +69,7 @@ export default function DailyQuestion() {
             }
           }
         }
-      }).catch(() => {});
+      }).catch(() => { });
     }
   }, [question, token]);
 
@@ -120,186 +133,272 @@ export default function DailyQuestion() {
   };
   if (loading) {
     return <div className="py-20 flex flex-col items-center justify-center gap-4 animate-in fade-in">
-        <Loader2 className="w-10 h-10 animate-spin text-primary" />
-        <p className="text-muted-foreground">Loading today's challenge...</p>
-      </div>;
+      <Loader2 className="w-10 h-10 animate-spin text-primary" />
+      <p className="text-muted-foreground">Loading today's challenge...</p>
+    </div>;
   }
   if (error || !question) {
     return <div className="py-20 flex flex-col items-center justify-center gap-4 animate-in fade-in">
-        <AlertCircle className="w-12 h-12 text-muted-foreground/30" />
-        <h2 className="text-xl font-semibold text-foreground">No Daily Question</h2>
-        <p className="text-muted-foreground max-w-md text-center">
-          {error || "Couldn't load today's question. Please try again later."}
-        </p>
-        <Button onClick={() => window.location.reload()} variant="outline">
-          Try Again
-        </Button>
-      </div>;
+      <AlertCircle className="w-12 h-12 text-muted-foreground/30" />
+      <h2 className="text-xl font-semibold text-foreground">No Daily Question</h2>
+      <p className="text-muted-foreground max-w-md text-center">
+        {error || "Couldn't load today's question. Please try again later."}
+      </p>
+      <Button onClick={() => window.location.reload()} variant="outline">
+        Try Again
+      </Button>
+    </div>;
   }
   return <div className="py-10 animate-in fade-in duration-500 max-w-5xl mx-auto">
-      {/* Success celebration banner */}
-      {(solvedState === "solved" || solvedState === "already_solved") && <div className="mb-8 p-6 bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-2xl flex items-center gap-4 animate-in slide-in-from-top-4 duration-500">
-          <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-            <Trophy className="w-7 h-7 text-emerald-600" />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-bold text-emerald-900 text-lg flex items-center gap-2">
-              {solvedState === "solved" ? <>
-                  <Sparkles className="w-5 h-5 text-emerald-500" /> Problem Solved!
-                </> : <>
-                  <CheckCircle className="w-5 h-5 text-emerald-500" /> Already Completed
-                </>}
-            </h3>
-            <p className="text-emerald-700 text-sm mt-0.5">
-              {solvedState === "solved" ? `You earned +${xpAwarded} XP for solving today's daily question!` : "You've already solved today's question. Come back tomorrow for a new challenge!"}
-            </p>
-          </div>
-        </div>}
+    {/* Success celebration banner */}
+    {(solvedState === "solved" || solvedState === "already_solved") && <div className="mb-8 p-6 bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-2xl flex items-center gap-4 animate-in slide-in-from-top-4 duration-500">
+      <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+        <Trophy className="w-7 h-7 text-emerald-600" />
+      </div>
+      <div className="flex-1">
+        <h3 className="font-bold text-emerald-900 text-lg flex items-center gap-2">
+          {solvedState === "solved" ? <>
+            <Sparkles className="w-5 h-5 text-emerald-500" /> Problem Solved!
+          </> : <>
+            <CheckCircle className="w-5 h-5 text-emerald-500" /> Already Completed
+          </>}
+        </h3>
+        <p className="text-emerald-700 text-sm mt-0.5">
+          {solvedState === "solved" ? `You earned +${xpAwarded} XP for solving today's daily question!` : "You've already solved today's question. Come back tomorrow for a new challenge!"}
+        </p>
+      </div>
+    </div>}
 
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground">Daily Challenge</h1>
-          <p className="text-muted-foreground mt-2">Solve this to earn XP and climb the leaderboard.</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-full border border-border">
-            <Clock className="w-4 h-4 text-primary" />
-            <span className="font-mono text-sm font-medium">{countdown} left</span>
-          </div>
-          <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-full border border-border">
-            <Flame className="w-4 h-4 text-orange-500 fill-orange-500" />
-            <span className="font-bold text-sm">{question.solvedCount} solved</span>
+    {/* Special Questions - PROMINENT */}
+    {specialQuestions.length > 0 && (
+      <div className="mb-10">
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6">
+          <h2 className="text-xl font-bold text-foreground mb-1 flex items-center gap-2">
+            <Star className="w-5 h-5 text-amber-500 fill-amber-500" /> Special Challenge
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">Solve these for bonus XP! Your solution is verified on the platform before XP is awarded.</p>
+
+          {specialError && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0" /> {specialError}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {specialQuestions.map(sq => {
+              const isSolved = sq.solvedUsers?.some(s => s.userId === user?._id);
+              return (
+                <div key={sq._id} className="bg-white/70 backdrop-blur rounded-xl border border-amber-100 p-4 flex items-center justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Badge variant="outline" className="capitalize text-[10px]">{sq.platform}</Badge>
+                      <Badge className="bg-amber-100 text-amber-800 border-none text-[10px]">+{sq.points} XP</Badge>
+                    </div>
+                    <h3 className="font-bold text-foreground text-sm truncate">{sq.title}</h3>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      {sq.solvedUsers?.length || 0} solved
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-2 shrink-0">
+                    <Button size="sm" variant="outline" className="gap-1 text-xs"
+                      onClick={() => window.open(sq.problemLink, "_blank")}>
+                      <ExternalLink className="w-3 h-3" /> Solve
+                    </Button>
+                    {isSolved ? (
+                      <Badge className="bg-emerald-100 text-emerald-700 border-none text-xs justify-center">
+                        <CheckCircle className="w-3 h-3 mr-1" /> Verified
+                      </Badge>
+                    ) : (
+                      <Button size="sm" className="bg-primary hover:bg-secondary text-white text-xs gap-1"
+                        disabled={solvingSpecial === sq._id || !token}
+                        onClick={async () => {
+                          setSolvingSpecial(sq._id);
+                          setSpecialError("");
+                          try {
+                            const res = await fetch(`${API_BASE}/api/user/solve-special`, {
+                              method: "POST",
+                              headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${token}`
+                              },
+                              body: JSON.stringify({ questionId: sq._id })
+                            });
+                            const data = await res.json();
+                            if (res.ok) {
+                              setSpecialQuestions(prev => prev.map(q =>
+                                q._id === sq._id ? { ...q, solvedUsers: [...(q.solvedUsers || []), { userId: user._id }] } : q
+                              ));
+                              if (data.newXp !== undefined && user) {
+                                updateUser({ ...user, xp: data.newXp, level: data.newLevel });
+                              }
+                              setSpecialError("");
+                            } else {
+                              setSpecialError(data.message || "Verification failed.");
+                            }
+                          } catch {
+                            setSpecialError("Network error. Please try again.");
+                          }
+                          finally { setSolvingSpecial(null); }
+                        }}>
+                        {solvingSpecial === sq._id
+                          ? <Loader2 className="w-3 h-3 animate-spin" />
+                          : <CheckCircle className="w-3 h-3" />}
+                        Verify
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
+    )}
 
-      {/* Two-column layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
-        {/* Main content - Problem description */}
-        <div className="space-y-6 order-2 lg:order-1">
-          <Card className="border-border/50 shadow-sm">
-            <CardHeader className="pb-4">
-              <div className="flex flex-wrap items-center gap-3">
-                <CardTitle className="text-2xl font-serif">{question.title}</CardTitle>
-                <Badge className={`${diffBadgeClass(question.difficulty)} border-none shadow-none`}>
-                  {question.difficulty}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6 text-foreground/90">
-              {/* Problem description (HTML from LeetCode) */}
-              <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none 
+    {/* Header */}
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+      <div>
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground">Daily Challenge</h1>
+        <p className="text-muted-foreground mt-2">Solve this to earn XP and climb the leaderboard.</p>
+      </div>
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-full border border-border">
+          <Clock className="w-4 h-4 text-primary" />
+          <span className="font-mono text-sm font-medium">{countdown} left</span>
+        </div>
+        <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-full border border-border">
+          <Flame className="w-4 h-4 text-orange-500 fill-orange-500" />
+          <span className="font-bold text-sm">{question.solvedCount} solved</span>
+        </div>
+      </div>
+    </div>
+
+    {/* Two-column layout */}
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
+      {/* Main content - Problem description */}
+      <div className="space-y-6 order-2 lg:order-1">
+        <Card className="border-border/50 shadow-sm">
+          <CardHeader className="pb-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <CardTitle className="text-2xl font-serif">{question.title}</CardTitle>
+              <Badge className={`${diffBadgeClass(question.difficulty)} border-none shadow-none`}>
+                {question.difficulty}
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6 text-foreground/90">
+            {/* Problem description (HTML from LeetCode) */}
+            <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none 
                                            [&_pre]:bg-muted/50 [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:border [&_pre]:border-border/50 [&_pre]:text-sm [&_pre]:font-mono [&_pre]:overflow-x-auto
                                            [&_code]:bg-muted/40 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm
                                            [&_img]:max-w-full [&_img]:rounded-lg
                                            [&_table]:border-collapse [&_table]:w-full [&_th]:border [&_th]:border-border [&_th]:px-3 [&_th]:py-2 [&_th]:bg-muted/30
                                            [&_td]:border [&_td]:border-border [&_td]:px-3 [&_td]:py-2" dangerouslySetInnerHTML={{
-              __html: question.description
-            }} />
+                __html: question.description
+              }} />
 
-              {/* Solve button */}
-              <div className="border-t border-border/50 pt-5 flex flex-col sm:flex-row justify-between items-center gap-4">
-                {solvedState === "solved" || solvedState === "already_solved" ? <p className="text-sm text-emerald-600 font-medium flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" /> Completed — Great work!
-                  </p> : <p className="text-sm text-muted-foreground">
-                    Solve this problem on the platform. Come back and click "Check Solution" to earn XP.
-                  </p>}
-                <div className="flex gap-3 shrink-0">
-                  {solvedState !== "solved" && solvedState !== "already_solved" && <Button variant="outline" className="gap-2 rounded-full" onClick={handleCheckSolution} disabled={solvedState === "checking" || !token}>
-                      {solvedState === "checking" ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
-                      Check Solution
-                    </Button>}
-                  <Button className="bg-primary hover:bg-secondary text-primary-foreground gap-2 rounded-full px-6" onClick={() => window.open(question.platformUrl, "_blank")}>
-                    <ExternalLink className="w-4 h-4" /> Solve on {question.platform === "codeforces" ? "Codeforces" : question.platform === "codechef" ? "CodeChef" : question.platform === "hackerrank" ? "HackerRank" : "LeetCode"}
-                  </Button>
-                </div>
+            {/* Solve button */}
+            <div className="border-t border-border/50 pt-5 flex flex-col sm:flex-row justify-between items-center gap-4">
+              {solvedState === "solved" || solvedState === "already_solved" ? <p className="text-sm text-emerald-600 font-medium flex items-center gap-2">
+                <CheckCircle className="w-4 h-4" /> Completed — Great work!
+              </p> : <p className="text-sm text-muted-foreground">
+                Solve this problem on the platform. Come back and click "Check Solution" to earn XP.
+              </p>}
+              <div className="flex gap-3 shrink-0">
+                {solvedState !== "solved" && solvedState !== "already_solved" && <Button variant="outline" className="gap-2 rounded-full" onClick={handleCheckSolution} disabled={solvedState === "checking" || !token}>
+                  {solvedState === "checking" ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                  Check Solution
+                </Button>}
+                <Button className="bg-primary hover:bg-secondary text-primary-foreground gap-2 rounded-full px-6" onClick={() => window.open(question.platformUrl, "_blank")}>
+                  <ExternalLink className="w-4 h-4" /> Solve on {question.platform === "codeforces" ? "Codeforces" : question.platform === "codechef" ? "CodeChef" : question.platform === "hackerrank" ? "HackerRank" : "LeetCode"}
+                </Button>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-        {/* Sidebar */}
-        <div className="order-1 lg:order-2 lg:sticky lg:top-24 lg:self-start space-y-5">
-          {/* Problem Info */}
-          <Card className="border-border/50 shadow-sm">
-            <CardHeader className="pb-3 border-b border-border/40">
-              <CardTitle className="text-base">Problem Info</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4 space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Difficulty</span>
-                <Badge className={`${diffBadgeClass(question.difficulty)} border-none shadow-none text-xs`}>
-                  {question.difficulty}
-                </Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Reward</span>
-                <span className="font-bold text-primary text-sm">+{question.xpReward} XP</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Platform</span>
-                <Badge variant="outline" className="text-xs capitalize">{question.platform}</Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Solved Today</span>
-                <span className="text-sm font-medium">{question.solvedCount}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Status</span>
-                {solvedState === "solved" || solvedState === "already_solved" ? <Badge className="bg-emerald-100 text-emerald-700 border-none text-xs">Solved ✓</Badge> : <Badge variant="outline" className="text-xs text-muted-foreground">Unsolved</Badge>}
-              </div>
-            </CardContent>
-          </Card>
+      {/* Sidebar */}
+      <div className="order-1 lg:order-2 lg:sticky lg:top-24 lg:self-start space-y-5">
+        {/* Problem Info */}
+        <Card className="border-border/50 shadow-sm">
+          <CardHeader className="pb-3 border-b border-border/40">
+            <CardTitle className="text-base">Problem Info</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4 space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Difficulty</span>
+              <Badge className={`${diffBadgeClass(question.difficulty)} border-none shadow-none text-xs`}>
+                {question.difficulty}
+              </Badge>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Reward</span>
+              <span className="font-bold text-primary text-sm">+{question.xpReward} XP</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Platform</span>
+              <Badge variant="outline" className="text-xs capitalize">{question.platform}</Badge>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Solved Today</span>
+              <span className="text-sm font-medium">{question.solvedCount}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Status</span>
+              {solvedState === "solved" || solvedState === "already_solved" ? <Badge className="bg-emerald-100 text-emerald-700 border-none text-xs">Solved ✓</Badge> : <Badge variant="outline" className="text-xs text-muted-foreground">Unsolved</Badge>}
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Hints */}
-          {question.hints.length > 0 && <Card className="border-border/50 shadow-sm">
-              <CardHeader className="pb-3 border-b border-border/40">
-                <CardTitle className="text-base font-serif">Hints</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-4 space-y-3">
-                {question.hints.map((hint, i) => <details key={i} className="group">
-                    <summary className="flex items-center gap-2.5 cursor-pointer select-none bg-primary/5 border border-primary/20 rounded-lg p-3 hover:bg-primary/10 transition-colors">
-                      <Lightbulb className="w-4 h-4 text-primary shrink-0" />
-                      <span className="font-semibold text-foreground text-xs">Hint {i + 1}</span>
-                    </summary>
-                    <div className="mt-2 px-3 pb-2 text-xs text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{
+        {/* Hints */}
+        {question.hints.length > 0 && <Card className="border-border/50 shadow-sm">
+          <CardHeader className="pb-3 border-b border-border/40">
+            <CardTitle className="text-base font-serif">Hints</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4 space-y-3">
+            {question.hints.map((hint, i) => <details key={i} className="group">
+              <summary className="flex items-center gap-2.5 cursor-pointer select-none bg-primary/5 border border-primary/20 rounded-lg p-3 hover:bg-primary/10 transition-colors">
+                <Lightbulb className="w-4 h-4 text-primary shrink-0" />
+                <span className="font-semibold text-foreground text-xs">Hint {i + 1}</span>
+              </summary>
+              <div className="mt-2 px-3 pb-2 text-xs text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{
                 __html: hint
               }} />
-                  </details>)}
-              </CardContent>
-            </Card>}
+            </details>)}
+          </CardContent>
+        </Card>}
 
-          {/* Topic Tags */}
-          {question.topicTags.length > 0 && <Card className="border-border/50 shadow-sm">
-              <CardContent className="pt-5 pb-5">
-                <h4 className="text-xs font-bold text-foreground mb-3">Related Topics</h4>
-                <div className="flex flex-wrap gap-1.5">
-                  {question.topicTags.map(tag => <Badge key={tag} variant="outline" className="rounded-full text-[10px] px-2 py-0.5">
-                      {tag}
-                    </Badge>)}
-                </div>
-              </CardContent>
-            </Card>}
+        {/* Topic Tags */}
+        {question.topicTags.length > 0 && <Card className="border-border/50 shadow-sm">
+          <CardContent className="pt-5 pb-5">
+            <h4 className="text-xs font-bold text-foreground mb-3">Related Topics</h4>
+            <div className="flex flex-wrap gap-1.5">
+              {question.topicTags.map(tag => <Badge key={tag} variant="outline" className="rounded-full text-[10px] px-2 py-0.5">
+                {tag}
+              </Badge>)}
+            </div>
+          </CardContent>
+        </Card>}
 
-          {/* XP Info */}
-          <Card className="border-border/50 shadow-sm">
-            <CardContent className="pt-5 pb-5">
-              <div className="flex gap-3">
-                <AlertCircle className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {!token ? <span>Sign in to track your progress and earn XP for solving this challenge.</span> : !user?.platformIds?.leetcodeId ? <span>
-                      Add your <span className="font-semibold text-foreground">LeetCode username</span> in your
-                      Profile to auto-verify solutions and earn XP.
-                    </span> : <span>
-                      Solve the problem on LeetCode, then click <span className="font-semibold text-foreground">"Check Solution"</span> to verify and earn{" "}
-                      <span className="font-semibold text-primary">+{question.xpReward} XP</span>.
-                    </span>}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        {/* XP Info */}
+        <Card className="border-border/50 shadow-sm">
+          <CardContent className="pt-5 pb-5">
+            <div className="flex gap-3">
+              <AlertCircle className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {!token ? <span>Sign in to track your progress and earn XP for solving this challenge.</span> : !user?.platformIds?.leetcodeId ? <span>
+                  Add your <span className="font-semibold text-foreground">LeetCode username</span> in your
+                  Profile to auto-verify solutions and earn XP.
+                </span> : <span>
+                  Solve the problem on LeetCode, then click <span className="font-semibold text-foreground">"Check Solution"</span> to verify and earn{" "}
+                  <span className="font-semibold text-primary">+{question.xpReward} XP</span>.
+                </span>}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </div>;
+    </div>
+  </div>;
 }

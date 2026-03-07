@@ -2,9 +2,10 @@ import User from "../models/User.js";
 
 // XP reward constants
 export const XP_REWARDS = {
-  DAILY_QUESTION: 10,
+  DAILY_QUESTION: 20,
+  SPECIAL_QUESTION: 50,
   QUEST_COMPLETED: 15,
-  CONTEST_PARTICIPATION: 20,
+  CONTEST_PARTICIPATION: 30,
   TOP_CONTEST_RANK: 50
 };
 

@@ -59,6 +59,15 @@ const userSchema = new Schema({
   statsCache: {
     type: Schema.Types.Mixed,
     default: {}
+  },
+  role: {
+    type: String,
+    enum: ["student", "admin"],
+    default: "student"
+  },
+  profileImage: {
+    type: String,
+    default: ""
   }
 }, {
   timestamps: true

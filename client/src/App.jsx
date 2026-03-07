@@ -19,6 +19,7 @@ import Events from './pages/Events';
 import Resources from './pages/Resources';
 import Profile from './pages/Profile';
 import AuthPage from './pages/AuthPage';
+import Admin from './pages/Admin';
 
 function AppRoutes() {
   const {
@@ -27,39 +28,41 @@ function AppRoutes() {
   } = useAuth();
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>;
+      <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+    </div>;
   }
   if (!isAuthenticated) {
     return <AuthPage />;
   }
   return <>
-      <ScrollToTop />
-      <Layout>
-        <Switch>
-          <Route path="/" component={Home} />
-          <Route path="/about" component={AboutDSAC} />
-          <Route path="/dashboard" component={Dashboard} />
-          <Route path="/leaderboard" component={Leaderboard} />
-          <Route path="/daily" component={DailyQuestion} />
-          <Route path="/contests" component={Contests} />
-          <Route path="/quests" component={Quests} />
-          <Route path="/events" component={Events} />
-          <Route path="/resources" component={Resources} />
-          <Route path="/profile" component={Profile} />
-          <Route component={NotFound} />
-        </Switch>
-      </Layout>
-    </>;
+    <ScrollToTop />
+    <Layout>
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route path="/about" component={AboutDSAC} />
+        <Route path="/dashboard" component={Dashboard} />
+        <Route path="/leaderboard" component={Leaderboard} />
+        <Route path="/daily" component={DailyQuestion} />
+        <Route path="/contests" component={Contests} />
+        <Route path="/quests" component={Quests} />
+        <Route path="/events" component={Events} />
+        <Route path="/resources" component={Resources} />
+        <Route path="/profile/:username" component={Profile} />
+        <Route path="/profile" component={Profile} />
+        <Route path="/admin" component={Admin} />
+        <Route component={NotFound} />
+      </Switch>
+    </Layout>
+  </>;
 }
 function App() {
   return <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <AuthProvider>
-          <Toaster />
-          <AppRoutes />
-        </AuthProvider>
-      </TooltipProvider>
-    </QueryClientProvider>;
+    <TooltipProvider>
+      <AuthProvider>
+        <Toaster />
+        <AppRoutes />
+      </AuthProvider>
+    </TooltipProvider>
+  </QueryClientProvider>;
 }
 export default App;
