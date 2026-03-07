@@ -29,25 +29,25 @@ export default function Leaderboard() {
       const headers = {};
       if (token) headers.Authorization = `Bearer ${token}`;
       if (type === "platform") {
-        const res = await fetch(`${API_BASE}/api/leaderboard/platform`, {
+        const res = await fetch(`${API_BASE}/leaderboard/platform`, {
           headers
         });
         const data = await res.json();
         setPlatformData(data.leaderboard || []);
       } else if (type === "live-contests") {
-        const res = await fetch(`${API_BASE}/api/leaderboard/live-contests`, {
+        const res = await fetch(`${API_BASE}/leaderboard/live-contests`, {
           headers
         });
         const data = await res.json();
         setLiveContests(data.contests || []);
       } else if (type === "daily-tracker") {
-        const res = await fetch(`${API_BASE}/api/leaderboard/daily-tracker`, {
+        const res = await fetch(`${API_BASE}/leaderboard/daily-tracker`, {
           headers
         });
         const data = await res.json();
         setDailyTracker(data);
       } else {
-        const res = await fetch(`${API_BASE}/api/leaderboard/${type}`, {
+        const res = await fetch(`${API_BASE}/leaderboard/${type}`, {
           headers
         });
         const data = await res.json();

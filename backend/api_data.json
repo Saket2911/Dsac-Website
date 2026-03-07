@@ -1,0 +1,105 @@
+{
+  "lbData": {
+    "leaderboard": [
+      {
+        "rank": 1,
+        "name": "saket",
+        "email": "saketkolla29@gmail.com",
+        "xp": 40,
+        "level": 1,
+        "college": "vce",
+        "solvedCount": 228
+      },
+      {
+        "rank": 2,
+        "name": "DSAC Admin",
+        "email": "admin@dsac.club",
+        "xp": 0,
+        "level": 1,
+        "college": "Vasavi College of Engineering",
+        "solvedCount": 0
+      },
+      {
+        "rank": 3,
+        "name": "LOLO",
+        "email": "saketvrwwrwrkolla2222@gmail.com",
+        "xp": 0,
+        "level": 1,
+        "college": "vce",
+        "solvedCount": 0
+      }
+    ]
+  },
+  "dqData": {
+    "question": {
+      "id": "69ab1d88345698d58b7db035",
+      "questionId": "count-anagrams",
+      "title": "Count Anagrams",
+      "platform": "leetcode",
+      "difficulty": "Hard",
+      "description": "<p>You are given a string <code>s</code> containing one or more words. Every consecutive pair of words is separated by a single space <code>&#39; &#39;</code>.</p>\n\n<p>A string <code>t</code> is an <strong>anagram</strong> of string <code>s</code> if the <code>i<sup>th</sup></code> word of <code>t</code> is a <strong>permutation</strong> of the <code>i<sup>th</sup></code> word of <code>s</code>.</p>\n\n<ul>\n\t<li>For example, <code>&quot;acb dfe&quot;</code> is an anagram of <code>&quot;abc def&quot;</code>, but <code>&quot;def cab&quot;</code>&nbsp;and <code>&quot;adc bef&quot;</code> are not.</li>\n</ul>\n\n<p>Return <em>the number of <strong>distinct anagrams</strong> of </em><code>s</code>. Since the answer may be very large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;too hot&quot;\n<strong>Output:</strong> 18\n<strong>Explanation:</strong> Some of the anagrams of the given string are &quot;too hot&quot;, &quot;oot hot&quot;, &quot;oto toh&quot;, &quot;too toh&quot;, and &quot;too oht&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aa&quot;\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> There is only one anagram possible for the given string.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s</code> consists of lowercase English letters and spaces <code>&#39; &#39;</code>.</li>\n\t<li>There is single space between consecutive words.</li>\n</ul>\n",
+      "hints": [
+        "For each word, can you count the number of permutations possible if all characters are distinct?",
+        "How to reduce overcounting when letters are repeated?",
+        "The product of the counts of distinct permutations of all words will give the final answer."
+      ],
+      "xpReward": 40,
+      "topicTags": [
+        "Hash Table",
+        "Math",
+        "String",
+        "Combinatorics",
+        "Counting"
+      ],
+      "solvedCount": 1,
+      "date": "2026-03-06T18:30:00.000Z",
+      "platformUrl": "https://leetcode.com/problems/count-anagrams/"
+    }
+  },
+  "profData": {
+    "user": {
+      "platformIds": {
+        "leetcodeId": "Saket_2911",
+        "codeforcesId": "",
+        "codechefId": "",
+        "hackerrankId": "saketkolla28"
+      },
+      "_id": "69aa410d99f1b4982768d883",
+      "name": "saket",
+      "email": "saketkolla29@gmail.com",
+      "college": "vce",
+      "xp": 40,
+      "level": 1,
+      "solvedDailyQuestions": [
+        "69ab1d88345698d58b7db035"
+      ],
+      "contestsParticipated": [],
+      "createdAt": "2026-03-06T02:50:53.231Z",
+      "updatedAt": "2026-03-07T15:45:13.440Z",
+      "__v": 1,
+      "statsCache": {
+        "hackerrank": {
+          "badges": [
+            "Python",
+            "C"
+          ],
+          "problemsSolved": 86
+        },
+        "leetcode": {
+          "totalSolved": 228,
+          "easySolved": 130,
+          "mediumSolved": 90,
+          "hardSolved": 8,
+          "contestRating": 1574,
+          "contestRanking": 228184
+        },
+        "lastUpdated": "2026-03-07T15:45:13.423Z"
+      },
+      "profilePicture": "",
+      "role": "student",
+      "profileImage": ""
+    },
+    "xpToNext": 60,
+    "xpProgress": 40
+  }
+}

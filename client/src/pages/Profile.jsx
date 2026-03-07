@@ -37,7 +37,7 @@ export default function Profile() {
   useEffect(() => {
     if (isPublicView && params.username) {
       setLoadingPublic(true);
-      fetch(`${API_BASE}/api/user/public/${encodeURIComponent(params.username)}`)
+      fetch(`${API_BASE}/user/public/${encodeURIComponent(params.username)}`)
         .then(res => res.json())
         .then(data => {
           if (data.user) setPublicUser(data.user);
@@ -63,7 +63,7 @@ export default function Profile() {
   useEffect(() => {
     if (token && !isPublicView) {
       setLoadingStats(true);
-      fetch(`${API_BASE}/api/user/stats`, {
+      fetch(`${API_BASE}/user/stats`, {
         headers: { Authorization: `Bearer ${token}` }
       })
         .then(res => res.json())
@@ -80,7 +80,7 @@ export default function Profile() {
     try {
       const formData = new FormData();
       formData.append("profileImage", file);
-      const res = await fetch(`${API_BASE}/api/user/profile/upload-image`, {
+      const res = await fetch(`${API_BASE}/user/profile/upload-image`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData
@@ -103,7 +103,7 @@ export default function Profile() {
     setSaving(true);
     setSaveMessage("");
     try {
-      const res = await fetch(`${API_BASE}/api/user/profile`, {
+      const res = await fetch(`${API_BASE}/user/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -149,7 +149,7 @@ export default function Profile() {
   const xpInLevel = displayUser.xp % 100;
   const xpProgress = xpInLevel;
   const profileImageUrl = displayUser.profileImage
-    ? `${API_BASE}${displayUser.profileImage}`
+    ? displayUser.profileImage
     : null;
 
   return (

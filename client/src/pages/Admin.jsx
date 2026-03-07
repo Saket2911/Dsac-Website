@@ -61,7 +61,7 @@ export default function Admin() {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`${API_BASE}/api/admin/users`, { headers });
+            const res = await fetch(`${API_BASE}/admin/users`, { headers });
             const data = await res.json();
             setUsers(data.users || []);
         } catch { setUsers([]); }
@@ -71,7 +71,7 @@ export default function Admin() {
     const fetchSpecialQuestions = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`${API_BASE}/api/admin/special-questions`, { headers });
+            const res = await fetch(`${API_BASE}/admin/special-questions`, { headers });
             const data = await res.json();
             setSpecialQuestions(data.questions || []);
         } catch { setSpecialQuestions([]); }
@@ -81,7 +81,7 @@ export default function Admin() {
     const fetchResources = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`${API_BASE}/api/resources`, { headers });
+            const res = await fetch(`${API_BASE}/resources`, { headers });
             const data = await res.json();
             setResources(data.resources || []);
         } catch { setResources([]); }
@@ -98,7 +98,7 @@ export default function Admin() {
     const handleDeleteUser = async (id) => {
         if (!confirm("Are you sure you want to delete this user?")) return;
         try {
-            const res = await fetch(`${API_BASE}/api/admin/users/${id}`, {
+            const res = await fetch(`${API_BASE}/admin/users/${id}`, {
                 method: "DELETE", headers
             });
             const data = await res.json();
@@ -111,7 +111,7 @@ export default function Admin() {
         const newRole = currentRole === "admin" ? "student" : "admin";
         if (!confirm(`Change this user's role to "${newRole}"?`)) return;
         try {
-            const res = await fetch(`${API_BASE}/api/admin/users/${id}/role`, {
+            const res = await fetch(`${API_BASE}/admin/users/${id}/role`, {
                 method: "PUT", headers,
                 body: JSON.stringify({ role: newRole })
             });
@@ -124,7 +124,7 @@ export default function Admin() {
     const handleAddSpecialQuestion = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch(`${API_BASE}/api/admin/special-question`, {
+            const res = await fetch(`${API_BASE}/admin/special-question`, {
                 method: "POST", headers,
                 body: JSON.stringify({
                     title: sqTitle, platform: sqPlatform,
@@ -145,7 +145,7 @@ export default function Admin() {
         // Combine category and subcategory for the backend category field
         const fullCategory = resSubcategory ? `${resCategory} > ${resSubcategory}` : resCategory;
         try {
-            const res = await fetch(`${API_BASE}/api/admin/resources`, {
+            const res = await fetch(`${API_BASE}/admin/resources`, {
                 method: "POST", headers,
                 body: JSON.stringify({
                     title: resTitle, category: fullCategory,
@@ -166,7 +166,7 @@ export default function Admin() {
     const handleDeleteResource = async (id) => {
         if (!confirm("Delete this resource?")) return;
         try {
-            const res = await fetch(`${API_BASE}/api/admin/resources/${id}`, {
+            const res = await fetch(`${API_BASE}/admin/resources/${id}`, {
                 method: "DELETE", headers
             });
             const data = await res.json();

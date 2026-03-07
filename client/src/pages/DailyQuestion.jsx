@@ -26,7 +26,7 @@ export default function DailyQuestion() {
 
   // Fetch today's question
   useEffect(() => {
-    fetch(`${API_BASE}/api/daily-question`).then(res => res.json()).then(data => {
+    fetch(`${API_BASE}/daily-question`).then(res => res.json()).then(data => {
       if (data.question) {
         setQuestion(data.question);
       } else {
@@ -37,7 +37,7 @@ export default function DailyQuestion() {
 
   // Fetch special questions
   useEffect(() => {
-    fetch(`${API_BASE}/api/admin/special-questions`)
+    fetch(`${API_BASE}/admin/special-questions`)
       .then(res => res.json())
       .then(data => {
         if (data.questions) setSpecialQuestions(data.questions);
@@ -48,7 +48,7 @@ export default function DailyQuestion() {
   // Auto-check if user already solved when question loads
   useEffect(() => {
     if (question && token) {
-      fetch(`${API_BASE}/api/daily-question/check-solved`, {
+      fetch(`${API_BASE}/daily-question/check-solved`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -96,7 +96,7 @@ export default function DailyQuestion() {
     setSolvedState("checking");
     try {
       // First try the check-solved endpoint (auto-awards XP)
-      const res = await fetch(`${API_BASE}/api/daily-question/check-solved`, {
+      const res = await fetch(`${API_BASE}/daily-question/check-solved`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -215,7 +215,7 @@ export default function DailyQuestion() {
                           setSolvingSpecial(sq._id);
                           setSpecialError("");
                           try {
-                            const res = await fetch(`${API_BASE}/api/user/solve-special`, {
+                            const res = await fetch(`${API_BASE}/user/solve-special`, {
                               method: "POST",
                               headers: {
                                 "Content-Type": "application/json",

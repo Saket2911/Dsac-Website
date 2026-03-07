@@ -7,7 +7,10 @@ import dailyQuestionRoutes from "./dailyQuestionRoutes.js";
 import questRoutes from "./questRoutes.js";
 import adminRoutes from "./adminRoutes.js";
 import resourceRoutes from "./resourceRoutes.js";
+
 const router = Router();
+
+// All routes are nested under /api (which is how the frontend calls them)
 router.use("/auth", authRoutes);
 router.use("/user", userRoutes);
 router.use("/leaderboard", leaderboardRoutes);
@@ -24,4 +27,5 @@ router.get("/health", (_req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
 export default router;

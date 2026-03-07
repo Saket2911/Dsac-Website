@@ -17,7 +17,7 @@ export function Layout({
     logout,
     user
   } = useAuth();
-  const profileImageUrl = user?.profileImage ? `${API_BASE}${user.profileImage}` : null;
+  const profileImageUrl = user?.profileImage ? user.profileImage : null;
   const navLinks = [{
     name: "Home",
     path: "/"

@@ -8,11 +8,6 @@ import morgan from "morgan";
 import cors from "cors";
 
 import apiRouter from "./routes/apiRouter.js";
-import authRoutes from "./routes/authRoutes.js";
-import contestRoutes from "./routes/contestRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
-import dailyQuestionRoutes from "./routes/dailyQuestionRoutes.js";
-import leaderboardRoutes from "./routes/leaderboardRoutes.js";
 import { startDailyQuestionJob } from "./cronJobs/dailyQuestionCron.js";
 
 import connectDB from "./config/db.js";
@@ -51,12 +46,9 @@ app.use(cors({
 app.use("/uploads", express.static(uploadsDir));
 
 // Routes
+// All functional routes are consolidated under /api for frontend compatibility and organizational clarity
 app.use("/api", apiRouter);
-app.use("/auth", authRoutes);
-app.use("/contests", contestRoutes);
-app.use("/leaderboard", leaderboardRoutes);
-app.use("/daily-question", dailyQuestionRoutes);
-app.use("/user", userRoutes);
+
 
 // Root Health Check
 app.get("/", (req, res) => {

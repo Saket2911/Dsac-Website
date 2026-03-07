@@ -27,7 +27,7 @@ export default function Resources() {
   const [activeCategory, setActiveCategory] = useState("All");
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/resources`)
+    fetch(`${API_BASE}/resources`)
       .then(res => res.json())
       .then(data => {
         if (data.resources && data.resources.length > 0) {
