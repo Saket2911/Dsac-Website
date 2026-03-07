@@ -61,44 +61,6 @@ app.use("/uploads", express.static(uploadsDir));
 app.use("/api/auth", authRoutes);
 app.use("/api", apiRouter);
 
-// ─── ONE-TIME ADMIN SEED ENDPOINT ────────────────────────────────────────────
-// Hit GET /api/seed-admin?secret=DSAC_SEED_2024 once to create the admin user.
-// Remove or comment out this block after seeding.
-
-app.get("/api/seed-admin", async (req, res) => {
-  const SEED_SECRET = "DSAC_SEED_2024";
-  if (req.query.secret !== SEED_SECRET) {
-    return res.status(403).json({ message: "Forbidden: invalid secret" });
-  }
-  try {
-    const ADMIN_EMAIL = "admin@dsac.com";
-    const ADMIN_PASSWORD = "Admin@123";
-    const ADMIN_NAME = "DSAC Admin";
-    const existing = await User.findOne({ email: ADMIN_EMAIL });
-    if (existing) {
-      existing.role = "admin";
-      await existing.save();
-      return res.json({ message: `✅ User "${ADMIN_EMAIL}" promoted to admin.` });
-    }
-    const admin = new User({
-      name: ADMIN_NAME,
-      email: ADMIN_EMAIL,
-      password: ADMIN_PASSWORD,
-      role: "admin",
-      college: "Vasavi College of Engineering"
-    });
-    await admin.save();
-    return res.json({
-      message: "✅ Admin user created successfully!",
-      email: ADMIN_EMAIL,
-      password: ADMIN_PASSWORD,
-      note: "Please change this password after first login."
-    });
-  } catch (err) {
-    return res.status(500).json({ message: "Error seeding admin", error: err.message });
-  }
-});
-// ─────────────────────────────────────────────────────────────────────────────
 
 // Root Health Check
 app.get("/", (req, res) => {
