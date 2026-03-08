@@ -27,17 +27,19 @@ export const getXpLeaderboard = async (_req, res) => {
 };
 export const getDailyLeaderboard = async (_req, res) => {
   try {
-    const users = await User.find().select("name email xp level solvedDailyQuestions").sort({
-      "solvedDailyQuestions": -1
-    }).limit(50);
-    const leaderboard = users.sort((a, b) => b.solvedDailyQuestions.length - a.solvedDailyQuestions.length).map((user, index) => ({
-      rank: index + 1,
-      name: user.name,
-      email: user.email,
-      xp: user.xp,
-      level: user.level,
-      dailySolved: user.solvedDailyQuestions.length
-    }));
+    // Fetch all users (no DB-level sort on array field — array length sort must happen in JS)
+    const users = await User.find().select("name email xp level solvedDailyQuestions");
+    const leaderboard = users
+      .sort((a, b) => b.solvedDailyQuestions.length - a.solvedDailyQuestions.length)
+      .slice(0, 50)
+      .map((user, index) => ({
+        rank: index + 1,
+        name: user.name,
+        email: user.email,
+        xp: user.xp,
+        level: user.level,
+        dailySolved: user.solvedDailyQuestions.length
+      }));
     res.json({
       leaderboard
     });
@@ -50,17 +52,19 @@ export const getDailyLeaderboard = async (_req, res) => {
 };
 export const getContestLeaderboard = async (_req, res) => {
   try {
-    const users = await User.find().select("name email xp level contestsParticipated").sort({
-      "contestsParticipated": -1
-    }).limit(50);
-    const leaderboard = users.sort((a, b) => b.contestsParticipated.length - a.contestsParticipated.length).map((user, index) => ({
-      rank: index + 1,
-      name: user.name,
-      email: user.email,
-      xp: user.xp,
-      level: user.level,
-      contestsCount: user.contestsParticipated.length
-    }));
+    // Fetch all users (no DB-level sort on array field — array length sort must happen in JS)
+    const users = await User.find().select("name email xp level contestsParticipated");
+    const leaderboard = users
+      .sort((a, b) => b.contestsParticipated.length - a.contestsParticipated.length)
+      .slice(0, 50)
+      .map((user, index) => ({
+        rank: index + 1,
+        name: user.name,
+        email: user.email,
+        xp: user.xp,
+        level: user.level,
+        contestsCount: user.contestsParticipated.length
+      }));
     res.json({
       leaderboard
     });
@@ -78,32 +82,36 @@ export const getContestLeaderboard = async (_req, res) => {
  */
 export const getPlatformLeaderboard = async (_req, res) => {
   try {
-    const users = await User.find().select("name email xp level college platformIds statsCache").limit(100);
-    const leaderboard = users.map(user => {
-      const lc = user.statsCache?.leetcode?.totalSolved || 0;
-      const cf = user.statsCache?.codeforces?.problemsSolved || 0;
-      const cc = user.statsCache?.codechef?.problemsSolved || 0;
-      const total = lc + cf + cc;
-      return {
-        name: user.name,
-        email: user.email,
-        xp: user.xp,
-        level: user.level,
-        college: user.college || "",
-        leetcode: lc,
-        codeforces: cf,
-        codechef: cc,
-        total,
-        platformIds: {
-          leetcodeId: user.platformIds?.leetcodeId || "",
-          codeforcesId: user.platformIds?.codeforcesId || "",
-          codechefId: user.platformIds?.codechefId || ""
-        }
-      };
-    }).filter(u => u.total > 0).sort((a, b) => b.total - a.total).map((entry, index) => ({
-      rank: index + 1,
-      ...entry
-    }));
+    const users = await User.find().select("name email xp level college platformIds statsCache");
+    const leaderboard = users
+      .map(user => {
+        const lc = user.statsCache?.leetcode?.totalSolved || 0;
+        const cf = user.statsCache?.codeforces?.problemsSolved || 0;
+        const cc = user.statsCache?.codechef?.problemsSolved || 0;
+        const total = lc + cf + cc;
+        return {
+          name: user.name,
+          email: user.email,
+          xp: user.xp,
+          level: user.level,
+          college: user.college || "",
+          leetcode: lc,
+          codeforces: cf,
+          codechef: cc,
+          total,
+          platformIds: {
+            leetcodeId: user.platformIds?.leetcodeId || "",
+            codeforcesId: user.platformIds?.codeforcesId || "",
+            codechefId: user.platformIds?.codechefId || ""
+          }
+        };
+      })
+      // All users shown — sorted by total solved (those with 0 appear at the bottom)
+      .sort((a, b) => b.total - a.total)
+      .map((entry, index) => ({
+        rank: index + 1,
+        ...entry
+      }));
     res.json({
       leaderboard
     });
@@ -151,7 +159,7 @@ export const getLiveContestRankings = async (_req, res) => {
     const contests = todayContests.map(contest => {
       const now = new Date();
       let status = "past";
-      if (contest.startTime > now) status = "upcoming";else if (contest.endTime > now) status = "active";
+      if (contest.startTime > now) status = "upcoming"; else if (contest.endTime > now) status = "active";
       return {
         id: contest._id,
         name: contest.name,

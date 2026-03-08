@@ -135,6 +135,16 @@ export default function Leaderboard() {
         <p className="text-muted-foreground mt-2">Be the first to earn XP and climb the leaderboard!</p>
       </div>;
     }
+    // Determine which metric + label to show for this tab
+    const metricLabel = activeTab === "daily" ? "Daily Solved" : activeTab === "contest" ? "Contests Joined" : "Total XP";
+    const getMetric = entry =>
+      activeTab === "daily" ? `${entry.dailySolved ?? 0} solved` :
+        activeTab === "contest" ? `${entry.contestsCount ?? 0} contests` :
+          `${entry.xp} XP`;
+    const getPodiumMetric = entry =>
+      activeTab === "daily" ? `${entry.dailySolved ?? 0} solved` :
+        activeTab === "contest" ? `${entry.contestsCount ?? 0} contests` :
+          `${entry.xp} XP`;
     return <>
       {/* Podium for Top 3 */}
       {top3.length >= 3 && <div className="flex justify-center items-end h-64 gap-2 md:gap-6 mt-16 mb-8 px-4">
@@ -153,7 +163,7 @@ export default function Leaderboard() {
               <a className="hover:text-primary transition-colors cursor-pointer">{top3[1].name}</a>
             </Link>
           </div>
-          <div className="text-xs text-muted-foreground font-medium mb-2">{top3[1].xp} XP</div>
+          <div className="text-xs text-muted-foreground font-medium mb-2">{getPodiumMetric(top3[1])}</div>
           <div className="w-24 md:w-32 h-24 bg-gradient-to-t from-slate-200 to-slate-100 rounded-t-lg border-t-4 border-slate-300 flex items-center justify-center shadow-inner">
             <span className="text-4xl font-serif font-bold text-slate-400">2</span>
           </div>
@@ -174,7 +184,7 @@ export default function Leaderboard() {
               <a className="hover:text-primary transition-colors cursor-pointer">{top3[0].name}</a>
             </Link>
           </div>
-          <div className="text-sm text-primary font-bold mb-2">{top3[0].xp} XP</div>
+          <div className="text-sm text-primary font-bold mb-2">{getPodiumMetric(top3[0])}</div>
           <div className="w-28 md:w-36 h-32 bg-gradient-to-t from-yellow-200 to-yellow-100 rounded-t-lg border-t-4 border-yellow-400 flex items-center justify-center shadow-inner">
             <span className="text-5xl font-serif font-bold text-yellow-600">1</span>
           </div>
@@ -195,7 +205,7 @@ export default function Leaderboard() {
               <a className="hover:text-primary transition-colors cursor-pointer">{top3[2].name}</a>
             </Link>
           </div>
-          <div className="text-xs text-muted-foreground font-medium mb-2">{top3[2].xp} XP</div>
+          <div className="text-xs text-muted-foreground font-medium mb-2">{getPodiumMetric(top3[2])}</div>
           <div className="w-24 md:w-32 h-16 bg-gradient-to-t from-amber-200 to-amber-100 rounded-t-lg border-t-4 border-amber-600 flex items-center justify-center shadow-inner">
             <span className="text-3xl font-serif font-bold text-amber-700">3</span>
           </div>
@@ -211,7 +221,7 @@ export default function Leaderboard() {
                 <th scope="col" className="px-6 py-4 rounded-tl-lg font-semibold">Rank</th>
                 <th scope="col" className="px-6 py-4 font-semibold">Student</th>
                 <th scope="col" className="px-6 py-4 font-semibold">Level</th>
-                <th scope="col" className="px-6 py-4 font-semibold text-right rounded-tr-lg">Total XP</th>
+                <th scope="col" className="px-6 py-4 font-semibold text-right rounded-tr-lg">{metricLabel}</th>
               </tr>
             </thead>
             <tbody>
@@ -238,7 +248,7 @@ export default function Leaderboard() {
                   <Badge variant="secondary" className="bg-background">Lvl {entry.level}</Badge>
                 </td>
                 <td className="px-6 py-4 text-right font-bold text-primary">
-                  {entry.xp} XP
+                  {getMetric(entry)}
                 </td>
               </tr>)}
             </tbody>

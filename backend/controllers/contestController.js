@@ -23,7 +23,7 @@ async function fetchCodeforcesContests() {
       const startTime = new Date(c.startTimeSeconds * 1000);
       const endTime = new Date((c.startTimeSeconds + c.durationSeconds) * 1000);
       let status;
-      if (c.phase === "BEFORE") status = "upcoming";else if (c.phase === "CODING" || c.phase === "PENDING_SYSTEM_TEST") status = "active";else status = "past";
+      if (c.phase === "BEFORE") status = "upcoming"; else if (c.phase === "CODING" || c.phase === "PENDING_SYSTEM_TEST") status = "active"; else status = "past";
 
       // Only include upcoming + recent past (within 30 days)
       const daysDiff = (now.getTime() - endTime.getTime()) / (1000 * 60 * 60 * 24);
@@ -75,7 +75,7 @@ async function fetchLeetCodeContests() {
       const startTime = new Date(c.startTime * 1000);
       const endTime = new Date((c.startTime + c.duration) * 1000);
       let status;
-      if (startTime > now) status = "upcoming";else if (endTime > now) status = "active";else status = "past";
+      if (startTime > now) status = "upcoming"; else if (endTime > now) status = "active"; else status = "past";
       contests.push({
         name: c.title,
         platform: "leetcode",
@@ -95,49 +95,96 @@ async function fetchLeetCodeContests() {
 }
 
 /**
- * Fetch upcoming CodeChef contests using the Kontests API (free, no auth).
+ * Fetch CodeChef contests — uses Kontests /all endpoint (filtered) with clist.by as fallback.
  */
 async function fetchCodeChefContests() {
+  // Primary: Kontests /all endpoint filtered to CodeChef
   try {
-    const res = await axios.get("https://kontests.net/api/v1/code_chef", {
+    const res = await axios.get("https://kontests.net/api/v1/all", {
       timeout: 10000,
       headers: HEADERS
     });
     const now = new Date();
     const contests = [];
     for (const c of res.data || []) {
+      const site = (c.site || "").toLowerCase();
+      if (!site.includes("codechef") && !site.includes("code_chef")) continue;
       const startTime = new Date(c.start_time);
       const endTime = new Date(c.end_time);
-      const duration = Math.floor((endTime.getTime() - startTime.getTime()) / 1000);
+      const duration = Math.max(0, Math.floor((endTime.getTime() - startTime.getTime()) / 1000));
       let status;
-      if (c.status === "CODING") status = "active";else if (startTime > now) status = "upcoming";else status = "past";
-
-      // Only recent past (within 30 days)
+      if (c.status === "CODING") status = "active";
+      else if (startTime > now) status = "upcoming";
+      else status = "past";
       const daysDiff = (now.getTime() - endTime.getTime()) / (1000 * 60 * 60 * 24);
       if (status === "past" && daysDiff > 30) continue;
       contests.push({
         name: c.name,
         platform: "codechef",
-        url: c.url || `https://www.codechef.com/`,
+        url: c.url || "https://www.codechef.com/",
         startTime: startTime.toISOString(),
         endTime: endTime.toISOString(),
         duration,
         status
       });
     }
-    console.log(`[Contests] Fetched ${contests.length} CodeChef contests`);
+    console.log(`[Contests] Fetched ${contests.length} CodeChef contests via Kontests /all`);
+    return contests;
+  } catch (err) {
+    console.warn("[Contests] Kontests /all failed, trying clist.by fallback:", err.message);
+  }
+
+  // Fallback: clist.by public API
+  try {
+    const res = await axios.get(
+      "https://clist.by/api/v1/contest/?resource__name=codechef.com&upcoming=true&order_by=start&format=json",
+      { timeout: 10000, headers: HEADERS }
+    );
+    const now = new Date();
+    const contests = [];
+    for (const c of (res.data?.objects || [])) {
+      const startTime = new Date(c.start);
+      const endTime = new Date(c.end);
+      const duration = Math.max(0, Math.floor((endTime.getTime() - startTime.getTime()) / 1000));
+      let status;
+      if (startTime > now) status = "upcoming";
+      else if (endTime > now) status = "active";
+      else status = "past";
+      const daysDiff = (now.getTime() - endTime.getTime()) / (1000 * 60 * 60 * 24);
+      if (status === "past" && daysDiff > 30) continue;
+      contests.push({
+        name: c.event,
+        platform: "codechef",
+        url: c.href || "https://www.codechef.com/",
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString(),
+        duration,
+        status
+      });
+    }
+    console.log(`[Contests] Fetched ${contests.length} CodeChef contests via clist.by`);
     return contests;
   } catch (error) {
-    console.error("Error fetching CodeChef contests:", error instanceof Error ? error.message : error);
+    console.error("Error fetching CodeChef contests (all sources failed):", error.message);
     return [];
   }
 }
+
+// --- In-memory cache (60s TTL) ---
+let _contestCache = null;
+let _contestCacheAt = 0;
+const CONTEST_CACHE_TTL_MS = 60 * 1000;
 
 /**
  * GET /api/contests — Fetch upcoming, active, and recent past contests from external platforms.
  */
 export const getContests = async (_req, res) => {
   try {
+    const now = Date.now();
+    if (_contestCache && (now - _contestCacheAt) < CONTEST_CACHE_TTL_MS) {
+      console.log("[Contests] Returning cached contest data");
+      return res.json(_contestCache);
+    }
     // Fetch from all external APIs in parallel
     const [cfContests, lcContests, ccContests] = await Promise.all([fetchCodeforcesContests(), fetchLeetCodeContests(), fetchCodeChefContests()]);
     const allContests = [...cfContests, ...lcContests, ...ccContests];
@@ -145,11 +192,10 @@ export const getContests = async (_req, res) => {
     const active = allContests.filter(c => c.status === "active");
     const past = allContests.filter(c => c.status === "past").sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime()).slice(0, 6);
     console.log(`[Contests] Returning ${upcoming.length} upcoming, ${active.length} active, ${past.length} past`);
-    res.json({
-      upcoming,
-      active,
-      past
-    });
+    const result = { upcoming, active, past };
+    _contestCache = result;
+    _contestCacheAt = now;
+    res.json(result);
   } catch (error) {
     console.error("Get contests error:", error);
     res.status(500).json({
