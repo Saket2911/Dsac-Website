@@ -1,50 +1,11 @@
 import React from "react";
-import { Button } from "../components/ui/button";
 import { Code, Trophy, Users, Terminal, BookOpen, Target } from "lucide-react";
-import { Link } from "wouter";
+import HeroSection from "../components/HeroSection";
+
 export default function Home() {
-  return <div className="flex flex-col pb-20">
-      {/* Hero Section */}
-      <section className="py-20 md:py-32 flex flex-col items-center gap-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
-        {/* Logo & College Branding */}
-        <div className="relative flex flex-col items-center">
-          <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent blur-3xl rounded-full w-3/4 h-3/4 m-auto -z-10 animate-pulse" style={{
-          animationDuration: '4s'
-        }}></div>
-          <img src="/dsac-logo.png" alt="DSaC Logo" className="w-32 h-32 md:w-44 md:h-44 object-contain drop-shadow-[0_20px_50px_rgba(198,167,94,0.2)] mb-6" />
-        </div>
-
-        <div className="flex flex-col items-center text-center gap-4">
-          <p className="text-sm md:text-base uppercase tracking-[0.25em] text-primary font-semibold">
-            Vasavi College Of Engineering
-          </p>
-
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight text-foreground">
-            Data Structures &amp; Algorithms Club
-          </h1>
-
-          <p className="text-xl md:text-2xl font-medium text-primary/80 italic">
-            Learn. Build. Elevate.
-          </p>
-
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed mt-2">
-            Your gateway to mastering problem-solving, collaborative coding, and building a strong technical mindset.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-6">
-            <Link href="/about">
-              <Button size="lg" className="bg-primary hover:bg-secondary text-white rounded-full px-8 h-14 text-base shadow-[0_4px_20px_rgba(198,167,94,0.3)] hover:shadow-[0_8px_30px_rgba(168,137,61,0.4)] transition-all">
-                Learn More
-              </Button>
-            </Link>
-            <Link href="/events">
-              <Button size="lg" variant="outline" className="rounded-full px-8 h-14 text-base border-primary/20 hover:bg-primary/5 hover:text-primary transition-all">
-                Explore Events
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
+  return <div className="flex flex-col">
+      {/* Premium Hero Section */}
+      <HeroSection />
 
       {/* About Section */}
       <section className="py-20 bg-card rounded-3xl px-8 md:px-16 my-10 relative overflow-hidden">
@@ -106,7 +67,5 @@ export default function Home() {
             </div>)}
         </div>
       </section>
-
-
     </div>;
 }
