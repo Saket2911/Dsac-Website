@@ -7,7 +7,7 @@ import { Label } from "../components/ui/label";
 import { Badge } from "../components/ui/badge";
 import {
     Users, Trash2, Plus, Loader2, Shield, BookOpen, Star,
-    AlertCircle, CheckCircle, ShieldCheck, ShieldOff
+    AlertCircle, CheckCircle, ShieldCheck, ShieldOff, Calendar as CalendarDays, Pencil
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import API_BASE from "../config/api.js";
@@ -35,6 +35,19 @@ export default function Admin() {
     const [resDifficulty, setResDifficulty] = useState("Easy");
     const [resOrder, setResOrder] = useState(0);
     const [resources, setResources] = useState([]);
+
+    // Event form
+    const [events, setEvents] = useState([]);
+    const [evtTitle, setEvtTitle] = useState("");
+    const [evtDescription, setEvtDescription] = useState("");
+    const [evtDate, setEvtDate] = useState("");
+    const [evtTime, setEvtTime] = useState("");
+    const [evtLocation, setEvtLocation] = useState("");
+    const [evtType, setEvtType] = useState("Workshop");
+    const [evtCategory, setEvtCategory] = useState("upcoming");
+    const [evtAttendees, setEvtAttendees] = useState(0);
+    const [evtRedirectUrl, setEvtRedirectUrl] = useState("");
+    const [editingEventId, setEditingEventId] = useState(null);
 
     // Check if user is admin
     if (!user || user.role !== "admin") {
@@ -88,10 +101,21 @@ export default function Admin() {
         finally { setLoading(false); }
     };
 
+    const fetchEvents = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch(`${API_BASE}/events`, { headers });
+            const data = await res.json();
+            setEvents(data.events || []);
+        } catch { setEvents([]); }
+        finally { setLoading(false); }
+    };
+
     useEffect(() => {
         if (activeTab === "users") fetchUsers();
         else if (activeTab === "special") fetchSpecialQuestions();
         else if (activeTab === "resources") fetchResources();
+        else if (activeTab === "events") fetchEvents();
     }, [activeTab]);
 
     // Actions
@@ -175,10 +199,63 @@ export default function Admin() {
         } catch { showMessage("Error deleting resource"); }
     };
 
+    const handleSaveEvent = async (e) => {
+        e.preventDefault();
+        try {
+            const body = {
+                title: evtTitle, description: evtDescription, date: evtDate,
+                time: evtTime, location: evtLocation, type: evtType,
+                category: evtCategory, attendees: evtAttendees, redirectUrl: evtRedirectUrl
+            };
+            const url = editingEventId
+                ? `${API_BASE}/events/${editingEventId}`
+                : `${API_BASE}/events`;
+            const method = editingEventId ? "PUT" : "POST";
+            const res = await fetch(url, { method, headers, body: JSON.stringify(body) });
+            const data = await res.json();
+            showMessage(data.message);
+            if (res.ok) {
+                resetEventForm();
+                fetchEvents();
+            }
+        } catch { showMessage("Error saving event"); }
+    };
+
+    const resetEventForm = () => {
+        setEvtTitle(""); setEvtDescription(""); setEvtDate("");
+        setEvtTime(""); setEvtLocation(""); setEvtType("Workshop");
+        setEvtCategory("upcoming"); setEvtAttendees(0); setEvtRedirectUrl("");
+        setEditingEventId(null);
+    };
+
+    const handleEditEvent = (evt) => {
+        setEvtTitle(evt.title);
+        setEvtDescription(evt.description);
+        setEvtDate(evt.date ? new Date(evt.date).toISOString().split("T")[0] : "");
+        setEvtTime(evt.time || "");
+        setEvtLocation(evt.location || "");
+        setEvtType(evt.type || "Workshop");
+        setEvtCategory(evt.category || "upcoming");
+        setEvtAttendees(evt.attendees || 0);
+        setEvtRedirectUrl(evt.redirectUrl || "");
+        setEditingEventId(evt._id);
+    };
+
+    const handleDeleteEvent = async (id) => {
+        if (!confirm("Delete this event?")) return;
+        try {
+            const res = await fetch(`${API_BASE}/events/${id}`, { method: "DELETE", headers });
+            const data = await res.json();
+            showMessage(data.message);
+            fetchEvents();
+        } catch { showMessage("Error deleting event"); }
+    };
+
     const tabs = [
         { key: "users", label: "Users", icon: <Users className="w-4 h-4" /> },
         { key: "special", label: "Special Questions", icon: <Star className="w-4 h-4" /> },
-        { key: "resources", label: "Resources", icon: <BookOpen className="w-4 h-4" /> }
+        { key: "resources", label: "Resources", icon: <BookOpen className="w-4 h-4" /> },
+        { key: "events", label: "Events", icon: <CalendarDays className="w-4 h-4" /> }
     ];
 
     return (
@@ -445,6 +522,129 @@ export default function Admin() {
                                                         onClick={() => handleDeleteResource(r._id)}>
                                                         <Trash2 className="w-4 h-4" />
                                                     </Button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </div>
+                    )}
+
+                    {/* Events Tab */}
+                    {activeTab === "events" && (
+                        <div className="space-y-6">
+                            <Card className="border-border/50 shadow-sm">
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Plus className="w-5 h-5" /> {editingEventId ? "Edit Event" : "Add Event"}
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <form onSubmit={handleSaveEvent} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label>Title</Label>
+                                            <Input value={evtTitle} onChange={e => setEvtTitle(e.target.value)}
+                                                placeholder="Codezee – Coding Challenge" required />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Date</Label>
+                                            <Input type="date" value={evtDate} onChange={e => setEvtDate(e.target.value)} required />
+                                        </div>
+                                        <div className="space-y-2 md:col-span-2">
+                                            <Label>Description</Label>
+                                            <textarea value={evtDescription} onChange={e => setEvtDescription(e.target.value)}
+                                                placeholder="Describe the event..."
+                                                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" required />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Time</Label>
+                                            <Input value={evtTime} onChange={e => setEvtTime(e.target.value)}
+                                                placeholder="10:00 AM - 5:00 PM" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Location</Label>
+                                            <Input value={evtLocation} onChange={e => setEvtLocation(e.target.value)}
+                                                placeholder="Main Auditorium / Virtual" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Type</Label>
+                                            <select value={evtType} onChange={e => setEvtType(e.target.value)}
+                                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                                                <option value="Workshop">Workshop</option>
+                                                <option value="Hackathon">Hackathon</option>
+                                                <option value="Talk">Talk</option>
+                                                <option value="Meetup">Meetup</option>
+                                                <option value="Competition">Competition</option>
+                                                <option value="Flagship Event">Flagship Event</option>
+                                                <option value="National Level">National Level</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Category</Label>
+                                            <select value={evtCategory} onChange={e => setEvtCategory(e.target.value)}
+                                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                                                <option value="flagship">Flagship</option>
+                                                <option value="upcoming">Upcoming</option>
+                                                <option value="ongoing">Ongoing</option>
+                                                <option value="past">Past</option>
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Expected Attendees</Label>
+                                            <Input type="number" value={evtAttendees} onChange={e => setEvtAttendees(Number(e.target.value))} min={0} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Redirect URL (registration/details link)</Label>
+                                            <Input value={evtRedirectUrl} onChange={e => setEvtRedirectUrl(e.target.value)}
+                                                placeholder="https://forms.google.com/..." />
+                                        </div>
+                                        <div className="md:col-span-2 flex gap-3">
+                                            <Button type="submit" className="bg-primary hover:bg-secondary text-white gap-2">
+                                                <Plus className="w-4 h-4" /> {editingEventId ? "Update Event" : "Add Event"}
+                                            </Button>
+                                            {editingEventId && (
+                                                <Button type="button" variant="outline" onClick={resetEventForm}>Cancel Edit</Button>
+                                            )}
+                                        </div>
+                                    </form>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="border-border/50 shadow-sm">
+                                <CardHeader>
+                                    <CardTitle>All Events ({events.length})</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    {events.length === 0 ? (
+                                        <p className="text-muted-foreground text-center py-4">No events yet.</p>
+                                    ) : (
+                                        <div className="space-y-3">
+                                            {events.map(evt => (
+                                                <div key={evt._id} className="flex items-center justify-between p-3 rounded-lg border border-border/40 hover:bg-muted/30">
+                                                    <div>
+                                                        <div className="font-semibold text-foreground">{evt.title}</div>
+                                                        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1 flex-wrap">
+                                                            <Badge variant="outline" className="text-xs capitalize">{evt.category}</Badge>
+                                                            <Badge variant="outline" className="text-xs">{evt.type}</Badge>
+                                                            <span>{new Date(evt.date).toLocaleDateString()}</span>
+                                                            {evt.time && <span>{evt.time}</span>}
+                                                            {evt.location && <span>📍 {evt.location}</span>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                        <Button variant="ghost" size="sm"
+                                                            className="text-blue-600 hover:bg-blue-50"
+                                                            onClick={() => handleEditEvent(evt)}>
+                                                            <Pencil className="w-4 h-4" />
+                                                        </Button>
+                                                        <Button variant="ghost" size="sm"
+                                                            className="text-destructive hover:bg-destructive/10"
+                                                            onClick={() => handleDeleteEvent(evt._id)}>
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
