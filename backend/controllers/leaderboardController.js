@@ -88,7 +88,8 @@ export const getPlatformLeaderboard = async (_req, res) => {
         const lc = user.statsCache?.leetcode?.totalSolved || 0;
         const cf = user.statsCache?.codeforces?.problemsSolved || 0;
         const cc = user.statsCache?.codechef?.problemsSolved || 0;
-        const total = lc + cf + cc;
+        const hr = user.statsCache?.hackerrank?.problemsSolved || 0;
+        const total = lc + cf + cc + hr;
         return {
           name: user.name,
           email: user.email,
@@ -98,11 +99,13 @@ export const getPlatformLeaderboard = async (_req, res) => {
           leetcode: lc,
           codeforces: cf,
           codechef: cc,
+          hackerrank: hr,
           total,
           platformIds: {
             leetcodeId: user.platformIds?.leetcodeId || "",
             codeforcesId: user.platformIds?.codeforcesId || "",
-            codechefId: user.platformIds?.codechefId || ""
+            codechefId: user.platformIds?.codechefId || "",
+            hackerrankId: user.platformIds?.hackerrankId || ""
           }
         };
       })

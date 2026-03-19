@@ -78,6 +78,8 @@ export default function Leaderboard() {
         return "text-blue-500";
       case "codechef":
         return "text-red-500";
+      case "hackerrank":
+        return "text-green-500";
       default:
         return "text-muted-foreground";
     }
@@ -90,6 +92,8 @@ export default function Leaderboard() {
         return "bg-blue-500/10 border-blue-500/30";
       case "codechef":
         return "bg-red-500/10 border-red-500/30";
+      case "hackerrank":
+        return "bg-green-500/10 border-green-500/30";
       default:
         return "bg-muted/10 border-border";
     }
@@ -281,6 +285,9 @@ export default function Leaderboard() {
               <th scope="col" className="px-4 py-4 font-semibold text-center">
                 <span className="text-red-500">CodeChef</span>
               </th>
+              <th scope="col" className="px-4 py-4 font-semibold text-center">
+                <span className="text-green-500">HackerRank</span>
+              </th>
               <th scope="col" className="px-4 py-4 font-semibold text-right">Total</th>
             </tr>
           </thead>
@@ -317,6 +324,11 @@ export default function Leaderboard() {
               <td className="px-4 py-4 text-center">
                 <span className={`font-bold ${entry.codechef > 0 ? "text-red-500" : "text-muted-foreground/40"}`}>
                   {entry.codechef}
+                </span>
+              </td>
+              <td className="px-4 py-4 text-center">
+                <span className={`font-bold ${entry.hackerrank > 0 ? "text-green-500" : "text-muted-foreground/40"}`}>
+                  {entry.hackerrank}
                 </span>
               </td>
               <td className="px-4 py-4 text-right">

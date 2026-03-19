@@ -1,56 +1,85 @@
 import axios from "axios";
 
 /**
- * Fetch CodeChef stats. Uses an unofficial JSON API that some community
- * scrapers use (codechef-api.com), which is more stable than HTML parsing.
+ * Fetch CodeChef stats by scraping the user profile page directly.
+ * The previous community API (codechef-api.vercel.app) returned 402.
  */
 export async function fetchCodeChefStats(username) {
   try {
-    // Try the unofficial community API first (most reliable)
-    const response = await axios.get(`https://codechef-api.vercel.app/handle/${username}`, {
-      timeout: 12000,
+    const response = await axios.get(`https://www.codechef.com/users/${username}`, {
+      timeout: 15000,
       headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
       }
     });
-    const data = response.data;
-    if (!data || data.status === "Failed") throw new Error("API returned failure");
+    const html = response.data;
 
-    const rating = data.currentRating || 0;
-    const stars = data.stars ? data.stars.replace("★", "") : getStarsFromRating(rating);
-    const problemsSolved = data.totalSolved || 0;
-
-    return {
-      rating,
-      problemsSolved,
-      stars: stars + "★"
-    };
-  } catch {
-    // Fallback: try direct HTML scraping with strict regex
-    try {
-      const response = await axios.get(`https://www.codechef.com/users/${username}`, {
-        timeout: 15000,
-        headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-          "Accept": "text/html,application/xhtml+xml",
-        }
-      });
-      const html = response.data;
-
-      // Extract rating
-      const ratingMatch = html.match(/"currentRating"\s*:\s*(\d+)/);
-      const rating = ratingMatch ? parseInt(ratingMatch[1], 10) : 0;
-
-      // Extract problems solved from JSON-LD or page data
-      const solvedMatch = html.match(/"totalSolved"\s*:\s*(\d+)/);
-      const problemsSolved = solvedMatch ? parseInt(solvedMatch[1], 10) : 0;
-
-      const stars = getStarsFromRating(rating);
-      return { rating, problemsSolved, stars };
-    } catch (error) {
-      console.error(`CodeChef fetch error for ${username}:`, error instanceof Error ? error.message : error);
-      return null;
+    // Extract rating — look for multiple patterns CodeChef uses
+    let rating = 0;
+    const ratingPatterns = [
+      /class="rating-number"[^>]*>(\d+)</, // rating-number class
+      /"currentRating"\s*:\s*(\d+)/,         // JSON embedded in page
+      /rating\s*:\s*(\d+)/i,                 // generic rating pattern
+      /Current Rating\s*<\/div>\s*<div[^>]*>(\d+)/i, // Current Rating label
+    ];
+    for (const pattern of ratingPatterns) {
+      const match = html.match(pattern);
+      if (match) {
+        rating = parseInt(match[1], 10);
+        break;
+      }
     }
+
+    // Extract problems solved — multiple patterns
+    let problemsSolved = 0;
+    const solvedPatterns = [
+      /Total Problems Solved\s*:\s*(\d+)/i,
+      /"totalProblemsSolved"\s*:\s*(\d+)/,
+      /problems\/solved\?[^"]*"[^>]*>\s*\((\d+)\)/,           // "(123)" next to problems/solved link
+      /Fully Solved\s*<\/h5>\s*<\/div>\s*<div[^>]*>\s*(\d+)/i, // Fully Solved heading
+      /totalSolved\s*[":]+\s*(\d+)/,
+      /class="problems-solved"[^>]*>[\s\S]*?<h5[^>]*>[\s\S]*?<\/h5>\s*<\/div>\s*<div[^>]*>\s*(\d+)/i,
+    ];
+    for (const pattern of solvedPatterns) {
+      const match = html.match(pattern);
+      if (match) {
+        problemsSolved = parseInt(match[1], 10);
+        break;
+      }
+    }
+
+    // If we still can't find problems solved, try counting the problems list
+    if (problemsSolved === 0) {
+      // Count unique problem links on the page
+      const problemLinks = html.match(/\/problems\/[A-Z0-9_]+/gi);
+      if (problemLinks) {
+        const uniqueProblems = new Set(problemLinks.map(l => l.toLowerCase()));
+        // Only use if we found a reasonable number (filter out nav links etc.)
+        if (uniqueProblems.size > 2) {
+          problemsSolved = uniqueProblems.size;
+        }
+      }
+    }
+
+    // Extract stars
+    let stars = "";
+    const starsMatch = html.match(/class="rating"[^>]*>\s*([\d★]+)/);
+    if (starsMatch) {
+      stars = starsMatch[1];
+    }
+    if (!stars || stars === "0") {
+      stars = getStarsFromRating(rating);
+    }
+    if (!stars.includes("★")) {
+      stars = stars + "★";
+    }
+
+    return { rating, problemsSolved, stars };
+  } catch (error) {
+    console.error(`CodeChef fetch error for ${username}:`, error instanceof Error ? error.message : error);
+    return null;
   }
 }
 
