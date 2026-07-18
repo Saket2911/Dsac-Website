@@ -29,18 +29,22 @@ startDailyQuestionJob();
 const app = express();
 
 // Production Middleware
-app.use(helmet({
-  crossOriginResourcePolicy: false, // Allow cross-origin images (uploads)
-}));
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false, // Allow cross-origin images (uploads)
+  }),
+);
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors({
-  origin: true, // In production, you should specify the actual domain
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: true, // In production, you should specify the actual domain
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  }),
+);
 
 // Serverless DB Connection Middleware
 app.use(async (req, res, next) => {
@@ -49,7 +53,12 @@ app.use(async (req, res, next) => {
     next();
   } catch (error) {
     console.error("Database connection error in middleware:", error);
-    res.status(500).json({ error: "Database Connection Failed. Ensure IP is Allowlisted in MongoDB Atlas and MONGODB_URI is correct." });
+    res
+      .status(500)
+      .json({
+        error:
+          "Database Connection Failed. Ensure IP is Allowlisted in MongoDB Atlas and MONGODB_URI is correct.",
+      });
   }
 });
 
@@ -60,7 +69,6 @@ app.use("/uploads", express.static(uploadsDir));
 // All functional routes are consolidated under /api for frontend compatibility and organizational clarity
 app.use("/api/auth", authRoutes);
 app.use("/api", apiRouter);
-
 
 // Root Health Check
 app.get("/", (req, res) => {
@@ -73,8 +81,8 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({
     error: {
       message: err.message || "Internal Server Error",
-      status: err.status || 500
-    }
+      status: err.status || 500,
+    },
   });
 });
 

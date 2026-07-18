@@ -23,14 +23,17 @@ const connectDB = async () => {
     };
 
     console.log("Connecting to MongoDB...");
-    cached.promise = mongoose.connect(uri, opts).then((mongoose) => {
-      console.log("✅ MongoDB connected successfully");
-      return mongoose;
-    }).catch((err) => {
-      console.error("❌ MongoDB connection failed:", err.message);
-      cached.promise = null;
-      throw err;
-    });
+    cached.promise = mongoose
+      .connect(uri, opts)
+      .then((mongoose) => {
+        console.log("✅ MongoDB connected successfully");
+        return mongoose;
+      })
+      .catch((err) => {
+        console.error("❌ MongoDB connection failed:", err.message);
+        cached.promise = null;
+        throw err;
+      });
   }
 
   try {

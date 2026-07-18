@@ -2,33 +2,33 @@ import { fetchLeetCodeStats } from "../services/leetcodeService.js";
 import { fetchCodeforcesStats } from "../services/codeforcesService.js";
 import { fetchCodeChefStats } from "../services/codechefService.js";
 import { fetchHackerRankStats } from "../services/hackerrankService.js";
-import { xpToNextLevel, xpProgressPercent, addXp, XP_REWARDS } from "../utils/xp.js";
+import {
+  xpToNextLevel,
+  xpProgressPercent,
+  addXp,
+  XP_REWARDS,
+} from "../utils/xp.js";
 import User from "../models/User.js";
 import SpecialQuestion from "../models/SpecialQuestion.js";
 export const updatePlatformIds = async (req, res) => {
   try {
-    const {
-      leetcodeId,
-      codeforcesId,
-      codechefId,
-      hackerrankId
-    } = req.body;
+    const { leetcodeId, codeforcesId, codechefId, hackerrankId } = req.body;
     const user = req.user;
     user.platformIds = {
       leetcodeId: leetcodeId ?? user.platformIds.leetcodeId,
       codeforcesId: codeforcesId ?? user.platformIds.codeforcesId,
       codechefId: codechefId ?? user.platformIds.codechefId,
-      hackerrankId: hackerrankId ?? user.platformIds.hackerrankId
+      hackerrankId: hackerrankId ?? user.platformIds.hackerrankId,
     };
     await user.save();
     res.json({
       message: "Platform IDs updated successfully",
-      platformIds: user.platformIds
+      platformIds: user.platformIds,
     });
   } catch (error) {
     console.error("Update platform IDs error:", error);
     res.status(500).json({
-      message: "Server error updating platform IDs"
+      message: "Server error updating platform IDs",
     });
   }
 };
@@ -40,7 +40,7 @@ export const updateProfile = async (req, res) => {
       leetcodeId,
       codeforcesId,
       codechefId,
-      hackerrankId
+      hackerrankId,
     } = req.body;
     const user = req.user;
     if (name !== undefined) user.name = name.trim();
@@ -49,17 +49,17 @@ export const updateProfile = async (req, res) => {
       leetcodeId: leetcodeId ?? user.platformIds.leetcodeId,
       codeforcesId: codeforcesId ?? user.platformIds.codeforcesId,
       codechefId: codechefId ?? user.platformIds.codechefId,
-      hackerrankId: hackerrankId ?? user.platformIds.hackerrankId
+      hackerrankId: hackerrankId ?? user.platformIds.hackerrankId,
     };
     await user.save();
     res.json({
       message: "Profile updated successfully",
-      user
+      user,
     });
   } catch (error) {
     console.error("Update profile error:", error);
     res.status(500).json({
-      message: "Server error updating profile"
+      message: "Server error updating profile",
     });
   }
 };
@@ -69,12 +69,12 @@ export const getProfile = async (req, res) => {
     res.json({
       user,
       xpToNext: xpToNextLevel(user.xp),
-      xpProgress: xpProgressPercent(user.xp)
+      xpProgress: xpProgressPercent(user.xp),
     });
   } catch (error) {
     console.error("Get profile error:", error);
     res.status(500).json({
-      message: "Server error fetching profile"
+      message: "Server error fetching profile",
     });
   }
 };
@@ -86,44 +86,60 @@ export const getStats = async (req, res) => {
     const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
 
     // If cache is fresh, return it immediately without hammering external APIs
-    if (lastUpdated && (Date.now() - lastUpdated.getTime()) < CACHE_TTL_MS) {
+    if (lastUpdated && Date.now() - lastUpdated.getTime() < CACHE_TTL_MS) {
       return res.json({
         stats: cache,
         cachedAt: lastUpdated,
-        fromCache: true
+        fromCache: true,
       });
     }
 
     const stats = {};
     const promises = [];
     if (user.platformIds.leetcodeId) {
-      promises.push(fetchLeetCodeStats(user.platformIds.leetcodeId).then(data => {
-        if (data) stats.leetcode = data;
-      }).catch(() => {
-        // Fall back to cached leetcode if available
-        if (cache.leetcode) stats.leetcode = cache.leetcode;
-      }));
+      promises.push(
+        fetchLeetCodeStats(user.platformIds.leetcodeId)
+          .then((data) => {
+            if (data) stats.leetcode = data;
+          })
+          .catch(() => {
+            // Fall back to cached leetcode if available
+            if (cache.leetcode) stats.leetcode = cache.leetcode;
+          }),
+      );
     }
     if (user.platformIds.codeforcesId) {
-      promises.push(fetchCodeforcesStats(user.platformIds.codeforcesId).then(data => {
-        if (data) stats.codeforces = data;
-      }).catch(() => {
-        if (cache.codeforces) stats.codeforces = cache.codeforces;
-      }));
+      promises.push(
+        fetchCodeforcesStats(user.platformIds.codeforcesId)
+          .then((data) => {
+            if (data) stats.codeforces = data;
+          })
+          .catch(() => {
+            if (cache.codeforces) stats.codeforces = cache.codeforces;
+          }),
+      );
     }
     if (user.platformIds.codechefId) {
-      promises.push(fetchCodeChefStats(user.platformIds.codechefId).then(data => {
-        if (data) stats.codechef = data;
-      }).catch(() => {
-        if (cache.codechef) stats.codechef = cache.codechef;
-      }));
+      promises.push(
+        fetchCodeChefStats(user.platformIds.codechefId)
+          .then((data) => {
+            if (data) stats.codechef = data;
+          })
+          .catch(() => {
+            if (cache.codechef) stats.codechef = cache.codechef;
+          }),
+      );
     }
     if (user.platformIds.hackerrankId) {
-      promises.push(fetchHackerRankStats(user.platformIds.hackerrankId).then(data => {
-        if (data) stats.hackerrank = data;
-      }).catch(() => {
-        if (cache.hackerrank) stats.hackerrank = cache.hackerrank;
-      }));
+      promises.push(
+        fetchHackerRankStats(user.platformIds.hackerrankId)
+          .then((data) => {
+            if (data) stats.hackerrank = data;
+          })
+          .catch(() => {
+            if (cache.hackerrank) stats.hackerrank = cache.hackerrank;
+          }),
+      );
     }
     await Promise.allSettled(promises);
 
@@ -138,14 +154,13 @@ export const getStats = async (req, res) => {
     res.json({
       stats: finalStats,
       cachedAt: user.statsCache?.lastUpdated || new Date(),
-      fromCache: Object.keys(stats).length === 0
+      fromCache: Object.keys(stats).length === 0,
     });
   } catch (error) {
     console.error("Get stats error:", error);
     res.status(500).json({ message: "Server error fetching stats" });
   }
 };
-
 
 // Upload profile image
 export const uploadProfileImage = async (req, res) => {
@@ -159,7 +174,7 @@ export const uploadProfileImage = async (req, res) => {
     res.json({
       message: "Profile image uploaded successfully",
       profileImage: user.profileImage,
-      user
+      user,
     });
   } catch (error) {
     console.error("Upload profile image error:", error);
@@ -172,15 +187,22 @@ export const getPublicProfile = async (req, res) => {
   try {
     const { name } = req.params;
     const user = await User.findOne({
-      name: { $regex: new RegExp("^" + name.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&") + "$", "i") }
-    }).select("name email college xp level platformIds profileImage statsCache role createdAt");
+      name: {
+        $regex: new RegExp(
+          "^" + name.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&") + "$",
+          "i",
+        ),
+      },
+    }).select(
+      "name email college xp level platformIds profileImage statsCache role createdAt",
+    );
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     res.json({
       user,
       xpToNext: xpToNextLevel(user.xp),
-      xpProgress: xpProgressPercent(user.xp)
+      xpProgress: xpProgressPercent(user.xp),
     });
   } catch (error) {
     console.error("Get public profile error:", error);
@@ -202,10 +224,12 @@ export const solveSpecialQuestion = async (req, res) => {
     }
     // Check if already solved
     const alreadySolved = question.solvedUsers.some(
-      entry => entry.userId.toString() === user._id.toString()
+      (entry) => entry.userId.toString() === user._id.toString(),
     );
     if (alreadySolved) {
-      return res.status(400).json({ message: "You have already solved this question" });
+      return res
+        .status(400)
+        .json({ message: "You have already solved this question" });
     }
 
     // Verify on platform
@@ -215,16 +239,21 @@ export const solveSpecialQuestion = async (req, res) => {
       const match = question.problemLink.match(/problems\/([^/]+)/);
       const slug = match ? match[1] : null;
       if (slug) {
-        const { checkLeetCodeProblemSolved } = await import("../services/leetcodeService.js");
-        verified = await checkLeetCodeProblemSolved(user.platformIds.leetcodeId, slug);
+        const { checkLeetCodeProblemSolved } =
+          await import("../services/leetcodeService.js");
+        verified = await checkLeetCodeProblemSolved(
+          user.platformIds.leetcodeId,
+          slug,
+        );
       }
     }
 
     if (!verified) {
       return res.status(400).json({
-        message: question.platform === "leetcode"
-          ? "Could not verify your submission on LeetCode. Make sure you've solved the problem and your LeetCode username is correct in your profile."
-          : "Could not verify your submission. Make sure you've solved the problem on the platform and your platform username is set in your profile."
+        message:
+          question.platform === "leetcode"
+            ? "Could not verify your submission on LeetCode. Make sure you've solved the problem and your LeetCode username is correct in your profile."
+            : "Could not verify your submission. Make sure you've solved the problem on the platform and your platform username is set in your profile.",
       });
     }
 
@@ -233,12 +262,16 @@ export const solveSpecialQuestion = async (req, res) => {
     await question.save();
     // Award XP
     const xpAmount = question.points || XP_REWARDS.SPECIAL_QUESTION;
-    const updatedUser = await addXp(user._id.toString(), xpAmount, "Special question solved");
+    const updatedUser = await addXp(
+      user._id.toString(),
+      xpAmount,
+      "Special question solved",
+    );
     res.json({
       message: "Special question solved!",
       xpAwarded: xpAmount,
       newXp: updatedUser?.xp,
-      newLevel: updatedUser?.level
+      newLevel: updatedUser?.level,
     });
   } catch (error) {
     console.error("Solve special question error:", error);

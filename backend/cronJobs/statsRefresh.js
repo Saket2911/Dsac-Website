@@ -14,23 +14,28 @@ export function startStatsRefreshJob() {
     console.log("[CRON] Starting stats refresh...");
     try {
       const users = await User.find({
-        $or: [{
-          "platformIds.leetcodeId": {
-            $ne: ""
-          }
-        }, {
-          "platformIds.codeforcesId": {
-            $ne: ""
-          }
-        }, {
-          "platformIds.codechefId": {
-            $ne: ""
-          }
-        }, {
-          "platformIds.hackerrankId": {
-            $ne: ""
-          }
-        }]
+        $or: [
+          {
+            "platformIds.leetcodeId": {
+              $ne: "",
+            },
+          },
+          {
+            "platformIds.codeforcesId": {
+              $ne: "",
+            },
+          },
+          {
+            "platformIds.codechefId": {
+              $ne: "",
+            },
+          },
+          {
+            "platformIds.hackerrankId": {
+              $ne: "",
+            },
+          },
+        ],
       });
       console.log(`[CRON] Refreshing stats for ${users.length} users`);
       for (const user of users) {
@@ -38,39 +43,54 @@ export function startStatsRefreshJob() {
         try {
           const promises = [];
           if (user.platformIds.leetcodeId) {
-            promises.push(fetchLeetCodeStats(user.platformIds.leetcodeId).then(data => {
-              if (data) stats.leetcode = data;
-            }));
+            promises.push(
+              fetchLeetCodeStats(user.platformIds.leetcodeId).then((data) => {
+                if (data) stats.leetcode = data;
+              }),
+            );
           }
           if (user.platformIds.codeforcesId) {
-            promises.push(fetchCodeforcesStats(user.platformIds.codeforcesId).then(data => {
-              if (data) stats.codeforces = data;
-            }));
+            promises.push(
+              fetchCodeforcesStats(user.platformIds.codeforcesId).then(
+                (data) => {
+                  if (data) stats.codeforces = data;
+                },
+              ),
+            );
           }
           if (user.platformIds.codechefId) {
-            promises.push(fetchCodeChefStats(user.platformIds.codechefId).then(data => {
-              if (data) stats.codechef = data;
-            }));
+            promises.push(
+              fetchCodeChefStats(user.platformIds.codechefId).then((data) => {
+                if (data) stats.codechef = data;
+              }),
+            );
           }
           if (user.platformIds.hackerrankId) {
-            promises.push(fetchHackerRankStats(user.platformIds.hackerrankId).then(data => {
-              if (data) stats.hackerrank = data;
-            }));
+            promises.push(
+              fetchHackerRankStats(user.platformIds.hackerrankId).then(
+                (data) => {
+                  if (data) stats.hackerrank = data;
+                },
+              ),
+            );
           }
           await Promise.allSettled(promises);
           if (Object.keys(stats).length > 0) {
             user.statsCache = {
               ...stats,
-              lastUpdated: new Date()
+              lastUpdated: new Date(),
             };
             await user.save();
           }
         } catch (err) {
-          console.error(`[CRON] Error refreshing stats for user ${user.name}:`, err);
+          console.error(
+            `[CRON] Error refreshing stats for user ${user.name}:`,
+            err,
+          );
         }
 
         // Small delay between users to avoid rate limiting
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
       console.log("[CRON] Stats refresh complete");
     } catch (error) {

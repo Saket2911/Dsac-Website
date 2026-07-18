@@ -3,9 +3,12 @@ import Contest from "../models/Contest.js";
 import DailyQuestion from "../models/DailyQuestion.js";
 export const getXpLeaderboard = async (_req, res) => {
   try {
-    const users = await User.find().select("name email xp level college platformIds statsCache").sort({
-      xp: -1
-    }).limit(50);
+    const users = await User.find()
+      .select("name email xp level college platformIds statsCache")
+      .sort({
+        xp: -1,
+      })
+      .limit(50);
     const leaderboard = users.map((user, index) => ({
       rank: index + 1,
       name: user.name,
@@ -13,24 +16,28 @@ export const getXpLeaderboard = async (_req, res) => {
       xp: user.xp,
       level: user.level,
       college: user.college,
-      solvedCount: user.statsCache?.leetcode?.totalSolved || 0
+      solvedCount: user.statsCache?.leetcode?.totalSolved || 0,
     }));
     res.json({
-      leaderboard
+      leaderboard,
     });
   } catch (error) {
     console.error("XP leaderboard error:", error);
     res.status(500).json({
-      message: "Server error fetching XP leaderboard"
+      message: "Server error fetching XP leaderboard",
     });
   }
 };
 export const getDailyLeaderboard = async (_req, res) => {
   try {
     // Fetch all users (no DB-level sort on array field — array length sort must happen in JS)
-    const users = await User.find().select("name email xp level solvedDailyQuestions");
+    const users = await User.find().select(
+      "name email xp level solvedDailyQuestions",
+    );
     const leaderboard = users
-      .sort((a, b) => b.solvedDailyQuestions.length - a.solvedDailyQuestions.length)
+      .sort(
+        (a, b) => b.solvedDailyQuestions.length - a.solvedDailyQuestions.length,
+      )
       .slice(0, 50)
       .map((user, index) => ({
         rank: index + 1,
@@ -38,24 +45,28 @@ export const getDailyLeaderboard = async (_req, res) => {
         email: user.email,
         xp: user.xp,
         level: user.level,
-        dailySolved: user.solvedDailyQuestions.length
+        dailySolved: user.solvedDailyQuestions.length,
       }));
     res.json({
-      leaderboard
+      leaderboard,
     });
   } catch (error) {
     console.error("Daily leaderboard error:", error);
     res.status(500).json({
-      message: "Server error fetching daily leaderboard"
+      message: "Server error fetching daily leaderboard",
     });
   }
 };
 export const getContestLeaderboard = async (_req, res) => {
   try {
     // Fetch all users (no DB-level sort on array field — array length sort must happen in JS)
-    const users = await User.find().select("name email xp level contestsParticipated");
+    const users = await User.find().select(
+      "name email xp level contestsParticipated",
+    );
     const leaderboard = users
-      .sort((a, b) => b.contestsParticipated.length - a.contestsParticipated.length)
+      .sort(
+        (a, b) => b.contestsParticipated.length - a.contestsParticipated.length,
+      )
       .slice(0, 50)
       .map((user, index) => ({
         rank: index + 1,
@@ -63,15 +74,15 @@ export const getContestLeaderboard = async (_req, res) => {
         email: user.email,
         xp: user.xp,
         level: user.level,
-        contestsCount: user.contestsParticipated.length
+        contestsCount: user.contestsParticipated.length,
       }));
     res.json({
-      leaderboard
+      leaderboard,
     });
   } catch (error) {
     console.error("Contest leaderboard error:", error);
     res.status(500).json({
-      message: "Server error fetching contest leaderboard"
+      message: "Server error fetching contest leaderboard",
     });
   }
 };
@@ -82,9 +93,11 @@ export const getContestLeaderboard = async (_req, res) => {
  */
 export const getPlatformLeaderboard = async (_req, res) => {
   try {
-    const users = await User.find().select("name email xp level college platformIds statsCache");
+    const users = await User.find().select(
+      "name email xp level college platformIds statsCache",
+    );
     const leaderboard = users
-      .map(user => {
+      .map((user) => {
         const lc = user.statsCache?.leetcode?.totalSolved || 0;
         const cf = user.statsCache?.codeforces?.problemsSolved || 0;
         const cc = user.statsCache?.codechef?.problemsSolved || 0;
@@ -102,23 +115,23 @@ export const getPlatformLeaderboard = async (_req, res) => {
           platformIds: {
             leetcodeId: user.platformIds?.leetcodeId || "",
             codeforcesId: user.platformIds?.codeforcesId || "",
-            codechefId: user.platformIds?.codechefId || ""
-          }
+            codechefId: user.platformIds?.codechefId || "",
+          },
         };
       })
       // All users shown — sorted by total solved (those with 0 appear at the bottom)
       .sort((a, b) => b.total - a.total)
       .map((entry, index) => ({
         rank: index + 1,
-        ...entry
+        ...entry,
       }));
     res.json({
-      leaderboard
+      leaderboard,
     });
   } catch (error) {
     console.error("Platform leaderboard error:", error);
     res.status(500).json({
-      message: "Server error fetching platform leaderboard"
+      message: "Server error fetching platform leaderboard",
     });
   }
 };
@@ -135,31 +148,36 @@ export const getLiveContestRankings = async (_req, res) => {
 
     // Find contests that started today (either active or just finished today)
     const todayContests = await Contest.find({
-      $or: [{
-        startTime: {
-          $gte: today,
-          $lt: tomorrow
-        }
-      }, {
-        endTime: {
-          $gte: today,
-          $lt: tomorrow
-        }
-      }, {
-        startTime: {
-          $lte: today
+      $or: [
+        {
+          startTime: {
+            $gte: today,
+            $lt: tomorrow,
+          },
         },
-        endTime: {
-          $gte: today
-        }
-      }]
+        {
+          endTime: {
+            $gte: today,
+            $lt: tomorrow,
+          },
+        },
+        {
+          startTime: {
+            $lte: today,
+          },
+          endTime: {
+            $gte: today,
+          },
+        },
+      ],
     }).sort({
-      startTime: -1
+      startTime: -1,
     });
-    const contests = todayContests.map(contest => {
+    const contests = todayContests.map((contest) => {
       const now = new Date();
       let status = "past";
-      if (contest.startTime > now) status = "upcoming"; else if (contest.endTime > now) status = "active";
+      if (contest.startTime > now) status = "upcoming";
+      else if (contest.endTime > now) status = "active";
       return {
         id: contest._id,
         name: contest.name,
@@ -168,20 +186,22 @@ export const getLiveContestRankings = async (_req, res) => {
         startTime: contest.startTime,
         endTime: contest.endTime,
         status,
-        leaderboard: contest.leaderboard.sort((a, b) => a.rank - b.rank).map(entry => ({
-          rank: entry.rank,
-          username: entry.username,
-          score: entry.score
-        }))
+        leaderboard: contest.leaderboard
+          .sort((a, b) => a.rank - b.rank)
+          .map((entry) => ({
+            rank: entry.rank,
+            username: entry.username,
+            score: entry.score,
+          })),
       };
     });
     res.json({
-      contests
+      contests,
     });
   } catch (error) {
     console.error("Live contest rankings error:", error);
     res.status(500).json({
-      message: "Server error fetching live contest rankings"
+      message: "Server error fetching live contest rankings",
     });
   }
 };
@@ -201,20 +221,24 @@ export const getDailyQuestionTracker = async (_req, res) => {
     const question = await DailyQuestion.findOne({
       date: {
         $gte: today,
-        $lt: tomorrow
-      }
+        $lt: tomorrow,
+      },
     });
     if (!question) {
       res.json({
         question: null,
-        solvers: []
+        solvers: [],
       });
       return;
     }
 
     // Get all registered users to show who solved and who didn't
-    const allUsers = await User.find().select("name email platformIds").limit(100);
-    const solvedSet = new Set(question.solvedEntries.map(e => e.userId.toString()));
+    const allUsers = await User.find()
+      .select("name email platformIds")
+      .limit(100);
+    const solvedSet = new Set(
+      question.solvedEntries.map((e) => e.userId.toString()),
+    );
 
     // Also check legacy solvedUsers in case entries existed before solvedEntries was added
     for (const uid of question.solvedUsers) {
@@ -226,7 +250,7 @@ export const getDailyQuestionTracker = async (_req, res) => {
     for (const entry of question.solvedEntries) {
       solvedAtMap.set(entry.userId.toString(), entry.solvedAt);
     }
-    const solvers = allUsers.map(user => {
+    const solvers = allUsers.map((user) => {
       const uid = user._id.toString();
       const solved = solvedSet.has(uid);
       const solvedAt = solvedAtMap.get(uid) || null;
@@ -234,7 +258,7 @@ export const getDailyQuestionTracker = async (_req, res) => {
         name: user.name,
         email: user.email,
         solved,
-        solvedAt
+        solvedAt,
       };
     });
 
@@ -256,14 +280,14 @@ export const getDailyQuestionTracker = async (_req, res) => {
         platform: question.platform,
         difficulty: question.difficulty,
         date: question.date,
-        totalSolvers: solvedSet.size
+        totalSolvers: solvedSet.size,
       },
-      solvers
+      solvers,
     });
   } catch (error) {
     console.error("Daily question tracker error:", error);
     res.status(500).json({
-      message: "Server error fetching daily question tracker"
+      message: "Server error fetching daily question tracker",
     });
   }
 };

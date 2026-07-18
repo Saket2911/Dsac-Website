@@ -12,8 +12,8 @@ export const getDailyQuestion = async (_req, res) => {
     let question = await DailyQuestion.findOne({
       date: {
         $gte: today,
-        $lt: tomorrow
-      }
+        $lt: tomorrow,
+      },
     });
 
     // If no question for today, auto-generate one
@@ -24,12 +24,12 @@ export const getDailyQuestion = async (_req, res) => {
     // Fallback to most recent question
     if (!question) {
       question = await DailyQuestion.findOne().sort({
-        date: -1
+        date: -1,
       });
     }
     if (!question) {
       res.status(404).json({
-        message: "No daily question available"
+        message: "No daily question available",
       });
       return;
     }
@@ -58,32 +58,30 @@ export const getDailyQuestion = async (_req, res) => {
         topicTags: question.topicTags,
         solvedCount: question.solvedUsers.length,
         date: question.date,
-        platformUrl
-      }
+        platformUrl,
+      },
     });
   } catch (error) {
     console.error("Get daily question error:", error);
     res.status(500).json({
-      message: "Server error fetching daily question"
+      message: "Server error fetching daily question",
     });
   }
 };
 export const submitDailyQuestion = async (req, res) => {
   try {
     const user = req.user;
-    const {
-      questionId
-    } = req.body;
+    const { questionId } = req.body;
     if (!questionId) {
       res.status(400).json({
-        message: "questionId is required"
+        message: "questionId is required",
       });
       return;
     }
     const question = await DailyQuestion.findById(questionId);
     if (!question) {
       res.status(404).json({
-        message: "Question not found"
+        message: "Question not found",
       });
       return;
     }
@@ -92,7 +90,7 @@ export const submitDailyQuestion = async (req, res) => {
     const userId = user._id;
     if (question.solvedUsers.includes(userId)) {
       res.status(400).json({
-        message: "You have already solved this question"
+        message: "You have already solved this question",
       });
       return;
     }
@@ -100,14 +98,18 @@ export const submitDailyQuestion = async (req, res) => {
     // Verify on platform if possible
     let verified = false;
     if (question.platform === "leetcode" && user.platformIds.leetcodeId) {
-      verified = await checkLeetCodeProblemSolved(user.platformIds.leetcodeId, question.questionId);
+      verified = await checkLeetCodeProblemSolved(
+        user.platformIds.leetcodeId,
+        question.questionId,
+      );
     } else {
       // For other platforms or if no platform ID is set, accept the submission
       verified = true;
     }
     if (!verified) {
       res.status(400).json({
-        message: "Could not verify your submission. Make sure you've solved the problem on the platform."
+        message:
+          "Could not verify your submission. Make sure you've solved the problem on the platform.",
       });
       return;
     }
@@ -116,7 +118,7 @@ export const submitDailyQuestion = async (req, res) => {
     question.solvedUsers.push(userId);
     question.solvedEntries.push({
       userId,
-      solvedAt: new Date()
+      solvedAt: new Date(),
     });
     await question.save();
 
@@ -125,17 +127,21 @@ export const submitDailyQuestion = async (req, res) => {
     await user.save();
 
     // Award XP
-    const updatedUser = await addXp(userId.toString(), question.xpReward || XP_REWARDS.DAILY_QUESTION, "Daily question solved");
+    const updatedUser = await addXp(
+      userId.toString(),
+      question.xpReward || XP_REWARDS.DAILY_QUESTION,
+      "Daily question solved",
+    );
     res.json({
       message: "Question solved successfully!",
       xpAwarded: question.xpReward || XP_REWARDS.DAILY_QUESTION,
       newXp: updatedUser?.xp,
-      newLevel: updatedUser?.level
+      newLevel: updatedUser?.level,
     });
   } catch (error) {
     console.error("Submit daily question error:", error);
     res.status(500).json({
-      message: "Server error submitting daily question"
+      message: "Server error submitting daily question",
     });
   }
 };
@@ -157,13 +163,13 @@ export const checkSolvedStatus = async (req, res) => {
     const question = await DailyQuestion.findOne({
       date: {
         $gte: today,
-        $lt: tomorrow
-      }
+        $lt: tomorrow,
+      },
     });
     if (!question) {
       res.json({
         solved: false,
-        message: "No daily question for today"
+        message: "No daily question for today",
       });
       return;
     }
@@ -173,44 +179,51 @@ export const checkSolvedStatus = async (req, res) => {
       res.json({
         solved: true,
         alreadyAwarded: true,
-        message: "Already solved and XP awarded"
+        message: "Already solved and XP awarded",
       });
       return;
     }
 
     // Check on LeetCode
     if (question.platform === "leetcode" && user.platformIds.leetcodeId) {
-      const solved = await checkLeetCodeProblemSolved(user.platformIds.leetcodeId, question.questionId);
+      const solved = await checkLeetCodeProblemSolved(
+        user.platformIds.leetcodeId,
+        question.questionId,
+      );
       if (solved) {
         // Auto-award XP
         question.solvedUsers.push(userId);
         question.solvedEntries.push({
           userId,
-          solvedAt: new Date()
+          solvedAt: new Date(),
         });
         await question.save();
         user.solvedDailyQuestions.push(question._id);
         await user.save();
-        const updatedUser = await addXp(userId.toString(), question.xpReward || XP_REWARDS.DAILY_QUESTION, "Daily question auto-verified");
+        const updatedUser = await addXp(
+          userId.toString(),
+          question.xpReward || XP_REWARDS.DAILY_QUESTION,
+          "Daily question auto-verified",
+        );
         res.json({
           solved: true,
           alreadyAwarded: false,
           xpAwarded: question.xpReward || XP_REWARDS.DAILY_QUESTION,
           newXp: updatedUser?.xp,
           newLevel: updatedUser?.level,
-          message: "Problem solved! XP awarded automatically."
+          message: "Problem solved! XP awarded automatically.",
         });
         return;
       }
     }
     res.json({
       solved: false,
-      message: "Not solved yet"
+      message: "Not solved yet",
     });
   } catch (error) {
     console.error("Check solved status error:", error);
     res.status(500).json({
-      message: "Server error checking solved status"
+      message: "Server error checking solved status",
     });
   }
 };

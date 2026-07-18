@@ -4,9 +4,8 @@ import User from "../models/User.js";
 export const XP_REWARDS = {
   DAILY_QUESTION: 20,
   SPECIAL_QUESTION: 50,
-  QUEST_COMPLETED: 15,
   CONTEST_PARTICIPATION: 30,
-  TOP_CONTEST_RANK: 50
+  TOP_CONTEST_RANK: 50,
 };
 
 /**
@@ -28,7 +27,9 @@ export async function addXp(userId, amount, reason) {
   user.xp += amount;
   user.level = calculateLevel(user.xp);
   await user.save();
-  console.log(`[XP] User ${user.name} (${user._id}): +${amount} XP (${reason || "unknown"}) → Total: ${user.xp} XP, Level ${user.level}`);
+  console.log(
+    `[XP] User ${user.name} (${user._id}): +${amount} XP (${reason || "unknown"}) → Total: ${user.xp} XP, Level ${user.level}`,
+  );
   return user;
 }
 
@@ -48,5 +49,5 @@ export function xpProgressPercent(currentXp) {
   const currentLevel = calculateLevel(currentXp);
   const levelBaseXp = (currentLevel - 1) * 100;
   const progressInLevel = currentXp - levelBaseXp;
-  return Math.min(100, Math.round(progressInLevel / 100 * 100));
+  return Math.min(100, Math.round((progressInLevel / 100) * 100));
 }

@@ -4,5 +4,3 @@ export async function registerRoutes(httpServer, app) {
   app.use("/api", apiRouter);
   return httpServer;
 }
-
-

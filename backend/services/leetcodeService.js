@@ -4,9 +4,10 @@ const LEETCODE_GRAPHQL_URL = "https://leetcode.com/graphql";
 // Headers that mimic a real browser to avoid LeetCode bot detection
 const LC_HEADERS = {
   "Content-Type": "application/json",
-  "Referer": "https://leetcode.com",
-  "Origin": "https://leetcode.com",
-  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+  Referer: "https://leetcode.com",
+  Origin: "https://leetcode.com",
+  "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
 };
 
 export async function fetchLeetCodeStats(username) {
@@ -24,13 +25,19 @@ export async function fetchLeetCodeStats(username) {
           }
         }
       `,
-      variables: { username }
+      variables: { username },
     };
-    const problemResponse = await axios.post(LEETCODE_GRAPHQL_URL, problemQuery, {
-      headers: LC_HEADERS,
-      timeout: 12000
-    });
-    const acStats = problemResponse.data?.data?.matchedUser?.submitStatsGlobal?.acSubmissionNum;
+    const problemResponse = await axios.post(
+      LEETCODE_GRAPHQL_URL,
+      problemQuery,
+      {
+        headers: LC_HEADERS,
+        timeout: 12000,
+      },
+    );
+    const acStats =
+      problemResponse.data?.data?.matchedUser?.submitStatsGlobal
+        ?.acSubmissionNum;
     if (!acStats) return null;
     const statsMap = {};
     for (const stat of acStats) {
@@ -47,15 +54,19 @@ export async function fetchLeetCodeStats(username) {
           }
         }
       `,
-      variables: { username }
+      variables: { username },
     };
     let contestRating = 0;
     let contestRanking = 0;
     try {
-      const contestResponse = await axios.post(LEETCODE_GRAPHQL_URL, contestQuery, {
-        headers: LC_HEADERS,
-        timeout: 12000
-      });
+      const contestResponse = await axios.post(
+        LEETCODE_GRAPHQL_URL,
+        contestQuery,
+        {
+          headers: LC_HEADERS,
+          timeout: 12000,
+        },
+      );
       const contestData = contestResponse.data?.data?.userContestRanking;
       if (contestData) {
         contestRating = Math.round(contestData.rating || 0);
@@ -70,10 +81,13 @@ export async function fetchLeetCodeStats(username) {
       mediumSolved: statsMap["Medium"] || 0,
       hardSolved: statsMap["Hard"] || 0,
       contestRating,
-      contestRanking
+      contestRanking,
     };
   } catch (error) {
-    console.error(`LeetCode fetch error for ${username}:`, error instanceof Error ? error.message : error);
+    console.error(
+      `LeetCode fetch error for ${username}:`,
+      error instanceof Error ? error.message : error,
+    );
     return null;
   }
 }
@@ -91,19 +105,22 @@ export async function checkLeetCodeProblemSolved(username, problemSlug) {
       `,
       variables: {
         username,
-        limit: 50
-      }
+        limit: 50,
+      },
     };
     const response = await axios.post(LEETCODE_GRAPHQL_URL, query, {
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      timeout: 10000
+      timeout: 10000,
     });
     const submissions = response.data?.data?.recentAcSubmissionList || [];
-    return submissions.some(sub => sub.titleSlug === problemSlug);
+    return submissions.some((sub) => sub.titleSlug === problemSlug);
   } catch (error) {
-    console.error(`LeetCode submission check error for ${username}:`, error instanceof Error ? error.message : error);
+    console.error(
+      `LeetCode submission check error for ${username}:`,
+      error instanceof Error ? error.message : error,
+    );
     return false;
   }
 }
@@ -125,13 +142,13 @@ async function fetchLeetCodeProblemCount() {
             total
           }
         }
-      `
+      `,
     };
     const response = await axios.post(LEETCODE_GRAPHQL_URL, query, {
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      timeout: 10000
+      timeout: 10000,
     });
     const total = response.data?.data?.problemsetQuestionList?.total;
     return total || 3000; // fallback
@@ -146,7 +163,9 @@ async function fetchLeetCodeProblemCount() {
 export async function fetchRandomLeetCodeProblem() {
   try {
     const totalProblems = await fetchLeetCodeProblemCount();
-    const randomSkip = Math.floor(Math.random() * Math.min(totalProblems, 2500));
+    const randomSkip = Math.floor(
+      Math.random() * Math.min(totalProblems, 2500),
+    );
 
     // Step 1: Get a random problem slug from the problem list
     const listQuery = {
@@ -172,18 +191,19 @@ export async function fetchRandomLeetCodeProblem() {
       `,
       variables: {
         skip: randomSkip,
-        limit: 5
-      }
+        limit: 5,
+      },
     };
     const listResponse = await axios.post(LEETCODE_GRAPHQL_URL, listQuery, {
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      timeout: 15000
+      timeout: 15000,
     });
-    const questions = listResponse.data?.data?.problemsetQuestionList?.questions || [];
+    const questions =
+      listResponse.data?.data?.problemsetQuestionList?.questions || [];
     // Filter out premium-only problems
-    const freeQuestions = questions.filter(q => !q.isPaidOnly);
+    const freeQuestions = questions.filter((q) => !q.isPaidOnly);
     if (freeQuestions.length === 0) {
       console.error("No free LeetCode questions found at offset", randomSkip);
       return null;
@@ -207,14 +227,14 @@ export async function fetchRandomLeetCodeProblem() {
         }
       `,
       variables: {
-        titleSlug: picked.titleSlug
-      }
+        titleSlug: picked.titleSlug,
+      },
     };
     const detailResponse = await axios.post(LEETCODE_GRAPHQL_URL, detailQuery, {
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      timeout: 15000
+      timeout: 15000,
     });
     const problem = detailResponse.data?.data?.question;
     if (!problem) return null;
@@ -224,10 +244,13 @@ export async function fetchRandomLeetCodeProblem() {
       difficulty: problem.difficulty,
       content: problem.content || "",
       hints: problem.hints || [],
-      topicTags: (problem.topicTags || []).map(t => t.name)
+      topicTags: (problem.topicTags || []).map((t) => t.name),
     };
   } catch (error) {
-    console.error("Failed to fetch random LeetCode problem:", error instanceof Error ? error.message : error);
+    console.error(
+      "Failed to fetch random LeetCode problem:",
+      error instanceof Error ? error.message : error,
+    );
     return null;
   }
 }

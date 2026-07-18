@@ -4,7 +4,6 @@ import userRoutes from "./userRoutes.js";
 import leaderboardRoutes from "./leaderboardRoutes.js";
 import contestRoutes from "./contestRoutes.js";
 import dailyQuestionRoutes from "./dailyQuestionRoutes.js";
-import questRoutes from "./questRoutes.js";
 import adminRoutes from "./adminRoutes.js";
 import resourceRoutes from "./resourceRoutes.js";
 
@@ -16,7 +15,6 @@ router.use("/user", userRoutes);
 router.use("/leaderboard", leaderboardRoutes);
 router.use("/contests", contestRoutes);
 router.use("/daily-question", dailyQuestionRoutes);
-router.use("/quests", questRoutes);
 router.use("/admin", adminRoutes);
 router.use("/resources", resourceRoutes);
 
@@ -24,7 +22,7 @@ router.use("/resources", resourceRoutes);
 router.get("/health", (_req, res) => {
   res.json({
     status: "ok",
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 });
 

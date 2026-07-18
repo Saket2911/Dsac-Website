@@ -2,14 +2,14 @@ import { Router } from "express";
 import auth from "../middleware/auth.js";
 import checkAdmin from "../middleware/checkAdmin.js";
 import {
-    getAllUsers,
-    deleteUser,
-    updateUserRole,
-    postSpecialQuestion,
-    updateSpecialQuestion,
-    getSpecialQuestions,
-    addResource,
-    deleteResource
+  getAllUsers,
+  deleteUser,
+  updateUserRole,
+  postSpecialQuestion,
+  updateSpecialQuestion,
+  getSpecialQuestions,
+  addResource,
+  deleteResource,
 } from "../controllers/adminController.js";
 
 const router = Router();

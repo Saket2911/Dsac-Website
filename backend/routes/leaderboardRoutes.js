@@ -1,5 +1,12 @@
 import { Router } from "express";
-import { getXpLeaderboard, getDailyLeaderboard, getContestLeaderboard, getPlatformLeaderboard, getLiveContestRankings, getDailyQuestionTracker } from "../controllers/leaderboardController.js";
+import {
+  getXpLeaderboard,
+  getDailyLeaderboard,
+  getContestLeaderboard,
+  getPlatformLeaderboard,
+  getLiveContestRankings,
+  getDailyQuestionTracker,
+} from "../controllers/leaderboardController.js";
 const router = Router();
 router.get("/xp", getXpLeaderboard);
 router.get("/daily", getDailyLeaderboard);

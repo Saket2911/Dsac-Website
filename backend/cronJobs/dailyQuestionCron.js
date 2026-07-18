@@ -17,19 +17,32 @@ export async function generateDailyQuestion() {
   const existing = await DailyQuestion.findOne({
     date: {
       $gte: today,
-      $lt: tomorrow
-    }
+      $lt: tomorrow,
+    },
   });
   if (existing) {
-    console.log(`📝 Daily question already exists for today: "${existing.title}" (${existing.platform})`);
+    console.log(
+      `📝 Daily question already exists for today: "${existing.title}" (${existing.platform})`,
+    );
     return existing;
   }
 
   // Rotate platforms based on day of year: LeetCode 60%, Codeforces 40%
-  const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
-  const platforms = ["leetcode", "leetcode", "leetcode", "codeforces", "codeforces"];
+  const dayOfYear = Math.floor(
+    (today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) /
+      (1000 * 60 * 60 * 24),
+  );
+  const platforms = [
+    "leetcode",
+    "leetcode",
+    "leetcode",
+    "codeforces",
+    "codeforces",
+  ];
   const selectedPlatform = platforms[dayOfYear % platforms.length];
-  console.log(`🔍 Fetching random ${selectedPlatform} problem for daily question...`);
+  console.log(
+    `🔍 Fetching random ${selectedPlatform} problem for daily question...`,
+  );
   let questionData = null;
   if (selectedPlatform === "leetcode") {
     const problem = await fetchRandomLeetCodeProblem();
@@ -37,7 +50,7 @@ export async function generateDailyQuestion() {
       const xpMap = {
         Easy: 10,
         Medium: 20,
-        Hard: 40
+        Hard: 40,
       };
       questionData = {
         questionId: problem.titleSlug,
@@ -47,7 +60,7 @@ export async function generateDailyQuestion() {
         description: problem.content,
         hints: problem.hints,
         topicTags: problem.topicTags,
-        xpReward: xpMap[problem.difficulty] || 10
+        xpReward: xpMap[problem.difficulty] || 10,
       };
     }
   } else if (selectedPlatform === "codeforces") {
@@ -55,11 +68,12 @@ export async function generateDailyQuestion() {
     if (problem) {
       // Map Codeforces rating to difficulty
       let difficulty = "Medium";
-      if (problem.rating <= 1000) difficulty = "Easy";else if (problem.rating >= 1600) difficulty = "Hard";
+      if (problem.rating <= 1000) difficulty = "Easy";
+      else if (problem.rating >= 1600) difficulty = "Hard";
       const xpMap = {
         Easy: 10,
         Medium: 20,
-        Hard: 40
+        Hard: 40,
       };
       questionData = {
         questionId: `${problem.contestId}/${problem.index}`,
@@ -74,9 +88,14 @@ export async function generateDailyQuestion() {
 <li><strong>Problem:</strong> ${problem.index} - ${problem.name}</li>
 <li><strong>Rating:</strong> ${problem.rating}</li>
 </ul>`,
-        hints: [`This problem has a difficulty rating of ${problem.rating} on Codeforces.`, problem.tags.length > 0 ? `Related topics: ${problem.tags.join(", ")}` : "Try breaking the problem into smaller subproblems."],
+        hints: [
+          `This problem has a difficulty rating of ${problem.rating} on Codeforces.`,
+          problem.tags.length > 0
+            ? `Related topics: ${problem.tags.join(", ")}`
+            : "Try breaking the problem into smaller subproblems.",
+        ],
         topicTags: problem.tags,
-        xpReward: xpMap[difficulty] || 10
+        xpReward: xpMap[difficulty] || 10,
       };
     }
   }
@@ -89,7 +108,7 @@ export async function generateDailyQuestion() {
       const xpMap = {
         Easy: 10,
         Medium: 20,
-        Hard: 40
+        Hard: 40,
       };
       questionData = {
         questionId: problem.titleSlug,
@@ -99,31 +118,37 @@ export async function generateDailyQuestion() {
         description: problem.content,
         hints: problem.hints,
         topicTags: problem.topicTags,
-        xpReward: xpMap[problem.difficulty] || 10
+        xpReward: xpMap[problem.difficulty] || 10,
       };
     }
   }
   if (!questionData) {
-    console.error("❌ Failed to fetch a problem for daily question from any platform");
+    console.error(
+      "❌ Failed to fetch a problem for daily question from any platform",
+    );
     return null;
   }
   try {
     const question = await DailyQuestion.create({
       ...questionData,
       date: today,
-      solvedUsers: []
+      solvedUsers: [],
     });
-    console.log(`✅ Daily question created: "${questionData.title}" (${questionData.platform}, ${questionData.difficulty}, +${questionData.xpReward} XP)`);
+    console.log(
+      `✅ Daily question created: "${questionData.title}" (${questionData.platform}, ${questionData.difficulty}, +${questionData.xpReward} XP)`,
+    );
     return question;
   } catch (error) {
     // Handle duplicate key error (race condition)
     if (error.code === 11000) {
-      console.log("📝 Daily question was already created (race condition), fetching existing...");
+      console.log(
+        "📝 Daily question was already created (race condition), fetching existing...",
+      );
       return DailyQuestion.findOne({
         date: {
           $gte: today,
-          $lt: tomorrow
-        }
+          $lt: tomorrow,
+        },
       });
     }
     console.error("❌ Error creating daily question:", error.message);
@@ -143,5 +168,7 @@ export function startDailyQuestionJob() {
   console.log("📅 Daily question cron job scheduled (midnight IST)");
 
   // Also generate immediately if none exists for today
-  generateDailyQuestion().catch(err => console.error("Error generating initial daily question:", err));
+  generateDailyQuestion().catch((err) =>
+    console.error("Error generating initial daily question:", err),
+  );
 }

@@ -5,7 +5,7 @@ const auth = async (req, res, next) => {
     const authHeader = req.header("Authorization");
     if (!authHeader) {
       res.status(401).json({
-        message: "No authentication token, access denied"
+        message: "No authentication token, access denied",
       });
       return;
     }
@@ -15,7 +15,7 @@ const auth = async (req, res, next) => {
     const user = await User.findById(decoded.userId);
     if (!user) {
       res.status(401).json({
-        message: "Token is valid but user not found"
+        message: "Token is valid but user not found",
       });
       return;
     }
@@ -23,7 +23,7 @@ const auth = async (req, res, next) => {
     next();
   } catch (error) {
     res.status(401).json({
-      message: "Token is not valid"
+      message: "Token is not valid",
     });
   }
 };

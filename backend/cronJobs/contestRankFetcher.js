@@ -16,26 +16,33 @@ export function startContestRankFetcherJob() {
       // Find active contests
       const activeContests = await Contest.find({
         startTime: {
-          $lte: now
+          $lte: now,
         },
         endTime: {
-          $gte: now
-        }
+          $gte: now,
+        },
       });
       if (activeContests.length === 0) return;
-      console.log(`[CRON] Fetching ranks for ${activeContests.length} active contest(s)`);
+      console.log(
+        `[CRON] Fetching ranks for ${activeContests.length} active contest(s)`,
+      );
       for (const contest of activeContests) {
         try {
           if (contest.platform === "codeforces") {
             // Get all users with codeforces IDs
             const users = await User.find({
               "platformIds.codeforcesId": {
-                $ne: ""
-              }
+                $ne: "",
+              },
             });
-            const handles = users.map(u => u.platformIds.codeforcesId).filter(h => !!h);
+            const handles = users
+              .map((u) => u.platformIds.codeforcesId)
+              .filter((h) => !!h);
             if (handles.length === 0) continue;
-            const standings = await fetchCodeforcesContestStandings(parseInt(contest.contestId), handles);
+            const standings = await fetchCodeforcesContestStandings(
+              parseInt(contest.contestId),
+              handles,
+            );
 
             // Update contest leaderboard
             const leaderboard = [];
@@ -48,7 +55,7 @@ export function startContestRankFetcherJob() {
                   userId: user._id,
                   rank: standing.rank,
                   score: standing.score,
-                  username: user.name
+                  username: user.name,
                 });
 
                 // Track contest participation
@@ -58,11 +65,19 @@ export function startContestRankFetcherJob() {
                   await user.save();
 
                   // Award participation XP
-                  await addXp(userId.toString(), XP_REWARDS.CONTEST_PARTICIPATION, "Contest participation");
+                  await addXp(
+                    userId.toString(),
+                    XP_REWARDS.CONTEST_PARTICIPATION,
+                    "Contest participation",
+                  );
 
                   // Award bonus for top rank
                   if (standing.rank <= 10) {
-                    await addXp(userId.toString(), XP_REWARDS.TOP_CONTEST_RANK, "Top contest rank");
+                    await addXp(
+                      userId.toString(),
+                      XP_REWARDS.TOP_CONTEST_RANK,
+                      "Top contest rank",
+                    );
                   }
                 }
               }
@@ -70,13 +85,18 @@ export function startContestRankFetcherJob() {
             if (leaderboard.length > 0) {
               contest.leaderboard = leaderboard.sort((a, b) => a.rank - b.rank);
               await contest.save();
-              console.log(`[CRON] Updated leaderboard for ${contest.name}: ${leaderboard.length} entries`);
+              console.log(
+                `[CRON] Updated leaderboard for ${contest.name}: ${leaderboard.length} entries`,
+              );
             }
           }
 
           // Add more platform handlers here (leetcode, codechef, etc.)
         } catch (err) {
-          console.error(`[CRON] Error fetching ranks for contest ${contest.name}:`, err);
+          console.error(
+            `[CRON] Error fetching ranks for contest ${contest.name}:`,
+            err,
+          );
         }
       }
     } catch (error) {
