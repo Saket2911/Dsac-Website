@@ -95,6 +95,54 @@ export default function Profile() {
     }
   }, [token, isPublicView]);
 
+  const compressImage = (file, maxWidth = 300, maxHeight = 300, quality = 0.85) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const compressedFile = new File([blob], "avatar.jpg", {
+                  type: "image/jpeg",
+                  lastModified: Date.now(),
+                });
+                resolve(compressedFile);
+              } else {
+                resolve(file);
+              }
+            },
+            "image/jpeg",
+            quality,
+          );
+        };
+        img.onerror = () => resolve(file);
+      };
+      reader.onerror = () => resolve(file);
+    });
+  };
+
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file || !token) return;
@@ -102,8 +150,9 @@ export default function Profile() {
     const objectUrl = URL.createObjectURL(file);
     setPreviewImage(objectUrl);
     try {
+      const compressedFile = await compressImage(file, 300, 300, 0.85);
       const formData = new FormData();
-      formData.append("profileImage", file);
+      formData.append("profileImage", compressedFile);
       const res = await fetch(`${API_BASE}/user/profile/upload-image`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
@@ -114,6 +163,8 @@ export default function Profile() {
         updateUser(data.user);
         setSaveMessage("Profile image updated!");
         setTimeout(() => setSaveMessage(""), 3000);
+      } else {
+        setSaveMessage(data.message || "Failed to upload image");
       }
     } catch {
       setSaveMessage("Failed to upload image");

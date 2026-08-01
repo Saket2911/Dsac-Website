@@ -169,7 +169,12 @@ export const uploadProfileImage = async (req, res) => {
       return res.status(400).json({ message: "No image file provided" });
     }
     const user = req.user;
-    user.profileImage = "/uploads/" + req.file.filename;
+    if (req.file.buffer) {
+      const base64Image = req.file.buffer.toString("base64");
+      user.profileImage = `data:${req.file.mimetype || "image/jpeg"};base64,${base64Image}`;
+    } else if (req.file.filename) {
+      user.profileImage = "/uploads/" + req.file.filename;
+    }
     await user.save();
     res.json({
       message: "Profile image uploaded successfully",
