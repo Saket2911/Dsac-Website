@@ -2,8 +2,9 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { Card } from "../components/ui/card";
-import { Avatar, AvatarFallback } from "../components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Badge } from "../components/ui/badge";
+import { getAvatarUrl } from "../lib/utils";
 import {
   Trophy,
   Medal,
@@ -188,6 +189,10 @@ export default function Leaderboard() {
             <div className="flex flex-col items-center animate-in slide-in-from-bottom-8 duration-700 delay-100">
               <div className="relative mb-2">
                 <Avatar className="h-16 w-16 border-4 border-slate-300">
+                  <AvatarImage
+                    src={getAvatarUrl(top3[1].profileImage)}
+                    alt={top3[1].name}
+                  />
                   <AvatarFallback className="bg-slate-100 text-slate-600 font-bold text-xl">
                     {getInitials(top3[1].name)}
                   </AvatarFallback>
@@ -220,6 +225,10 @@ export default function Leaderboard() {
                   <Crown className="w-8 h-8 fill-yellow-500" />
                 </div>
                 <Avatar className="h-20 w-20 border-4 border-yellow-400 ring-4 ring-yellow-400/20">
+                  <AvatarImage
+                    src={getAvatarUrl(top3[0].profileImage)}
+                    alt={top3[0].name}
+                  />
                   <AvatarFallback className="bg-yellow-100 text-yellow-700 font-bold text-2xl">
                     {getInitials(top3[0].name)}
                   </AvatarFallback>
@@ -246,6 +255,10 @@ export default function Leaderboard() {
             <div className="flex flex-col items-center animate-in slide-in-from-bottom-6 duration-700 delay-200">
               <div className="relative mb-2">
                 <Avatar className="h-14 w-14 border-4 border-amber-600">
+                  <AvatarImage
+                    src={getAvatarUrl(top3[2].profileImage)}
+                    alt={top3[2].name}
+                  />
                   <AvatarFallback className="bg-amber-100 text-amber-800 font-bold">
                     {getInitials(top3[2].name)}
                   </AvatarFallback>
@@ -315,6 +328,10 @@ export default function Leaderboard() {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <Avatar className="h-8 w-8">
+                              <AvatarImage
+                                src={getAvatarUrl(entry.profileImage)}
+                                alt={entry.name}
+                              />
                               <AvatarFallback className="bg-primary/10 text-primary text-xs">
                                 {getInitials(entry.name)}
                               </AvatarFallback>
@@ -423,6 +440,10 @@ export default function Leaderboard() {
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
+                        <AvatarImage
+                          src={getAvatarUrl(entry.profileImage)}
+                          alt={entry.name}
+                        />
                         <AvatarFallback className="bg-primary/10 text-primary text-xs">
                           {getInitials(entry.name)}
                         </AvatarFallback>
@@ -561,7 +582,24 @@ export default function Leaderboard() {
                           </span>
                         </td>
                         <td className="px-5 py-3 font-semibold text-foreground">
-                          {entry.username}
+                          <div className="flex items-center gap-2">
+                            <Avatar className="h-7 w-7">
+                              <AvatarImage
+                                src={getAvatarUrl(entry.profileImage)}
+                                alt={entry.username}
+                              />
+                              <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                                {getInitials(entry.username)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <Link
+                              href={`/profile/${encodeURIComponent(entry.username)}`}
+                            >
+                              <a className="hover:text-primary transition-colors cursor-pointer">
+                                {entry.username}
+                              </a>
+                            </Link>
+                          </div>
                         </td>
                         <td className="px-5 py-3 text-right font-bold text-primary">
                           {entry.score}
@@ -666,6 +704,10 @@ export default function Leaderboard() {
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
+                          <AvatarImage
+                            src={getAvatarUrl(solver.profileImage)}
+                            alt={solver.name}
+                          />
                           <AvatarFallback
                             className={`text-xs font-bold ${solver.solved ? "bg-green-500/10 text-green-600" : "bg-muted text-muted-foreground"}`}
                           >

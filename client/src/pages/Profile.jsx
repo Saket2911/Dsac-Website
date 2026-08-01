@@ -21,6 +21,7 @@ import { Progress } from "../components/ui/progress";
 import { LogOut, Loader2, Save, CheckCircle, Camera } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import API_BASE from "../config/api.js";
+import { getAvatarUrl } from "../lib/utils";
 
 export default function Profile() {
   const { user, token, logout, updateUser } = useAuth();
@@ -28,6 +29,7 @@ export default function Profile() {
   const isPublicView = !!params?.username;
   const [publicUser, setPublicUser] = useState(null);
   const [loadingPublic, setLoadingPublic] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
 
   const [stats, setStats] = useState({});
   const [loadingStats, setLoadingStats] = useState(false);
@@ -97,6 +99,8 @@ export default function Profile() {
     const file = e.target.files?.[0];
     if (!file || !token) return;
     setUploadingImage(true);
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewImage(objectUrl);
     try {
       const formData = new FormData();
       formData.append("profileImage", file);
@@ -115,6 +119,8 @@ export default function Profile() {
       setSaveMessage("Failed to upload image");
     } finally {
       setUploadingImage(false);
+      setPreviewImage(null);
+      if (e.target) e.target.value = null;
     }
   };
 
@@ -180,8 +186,10 @@ export default function Profile() {
     .slice(0, 2);
   const xpInLevel = displayUser.xp % 100;
   const xpProgress = xpInLevel;
-  const profileImageUrl = displayUser.profileImage
-    ? displayUser.profileImage
+  const profileImageUrl = previewImage
+    ? previewImage
+    : displayUser.profileImage
+    ? getAvatarUrl(displayUser.profileImage)
     : null;
 
   return (

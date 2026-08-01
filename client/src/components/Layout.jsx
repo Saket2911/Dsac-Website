@@ -27,11 +27,15 @@ import {
 } from "./ui/dropdown-menu";
 import { useAuth } from "../hooks/useAuth";
 import API_BASE from "../config/api.js";
+import { getAvatarUrl } from "../lib/utils";
+
 export function Layout({ children }) {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isAuthenticated, logout, user } = useAuth();
-  const profileImageUrl = user?.profileImage ? user.profileImage : null;
+  const profileImageUrl = user?.profileImage
+    ? getAvatarUrl(user.profileImage)
+    : null;
   const navLinks = [
     {
       name: "Home",
@@ -203,7 +207,17 @@ export function Layout({ children }) {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`text-base font-medium px-4 py-3 rounded-lg transition-colors flex items-center ${location === "/profile" ? "bg-primary/10 text-primary" : "text-foreground/70 hover:bg-card hover:text-foreground"}`}
                 >
-                  <User className="w-4 h-4 mr-2" /> Profile
+                  {profileImageUrl ? (
+                    <Avatar className="w-5 h-5 mr-2">
+                      <AvatarImage src={profileImageUrl} alt={user?.name} />
+                      <AvatarFallback className="bg-primary/10 text-primary text-[10px]">
+                        {user?.name?.[0]?.toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                  ) : (
+                    <User className="w-4 h-4 mr-2" />
+                  )}{" "}
+                  Profile
                 </a>
               </Link>
               <Link href="/profile">

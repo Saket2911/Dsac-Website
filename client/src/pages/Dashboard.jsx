@@ -9,6 +9,9 @@ import { Progress } from "../components/ui/progress";
 import { Medal, Target, Star, ChevronRight, Code, Trophy } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useLocation } from "wouter";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import { getAvatarUrl } from "../lib/utils";
+
 export default function Dashboard() {
   const { user } = useAuth();
   const [, navigate] = useLocation();
@@ -21,14 +24,27 @@ export default function Dashboard() {
   return (
     <div className="py-10 space-y-8 animate-in fade-in duration-500">
       {/* Header & Overview */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
-            Welcome back, {userName}!
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Here's your progress and upcoming activities.
-          </p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="flex items-center gap-4">
+          {user?.profileImage && (
+            <Avatar className="h-14 w-14 border-2 border-primary/20 shadow-md">
+              <AvatarImage
+                src={getAvatarUrl(user.profileImage)}
+                alt={user.name}
+              />
+              <AvatarFallback className="bg-primary/10 text-primary font-bold text-lg">
+                {user.name?.[0]?.toUpperCase() || "U"}
+              </AvatarFallback>
+            </Avatar>
+          )}
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+              Welcome back, {userName}!
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Here's your progress and upcoming activities.
+            </p>
+          </div>
         </div>
       </div>
 

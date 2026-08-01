@@ -4,7 +4,7 @@ import DailyQuestion from "../models/DailyQuestion.js";
 export const getXpLeaderboard = async (_req, res) => {
   try {
     const users = await User.find()
-      .select("name email xp level college platformIds statsCache")
+      .select("name email xp level college platformIds statsCache profileImage")
       .sort({
         xp: -1,
       })
@@ -16,6 +16,7 @@ export const getXpLeaderboard = async (_req, res) => {
       xp: user.xp,
       level: user.level,
       college: user.college,
+      profileImage: user.profileImage || "",
       solvedCount: user.statsCache?.leetcode?.totalSolved || 0,
     }));
     res.json({
@@ -32,7 +33,7 @@ export const getDailyLeaderboard = async (_req, res) => {
   try {
     // Fetch all users (no DB-level sort on array field — array length sort must happen in JS)
     const users = await User.find().select(
-      "name email xp level solvedDailyQuestions",
+      "name email xp level solvedDailyQuestions profileImage",
     );
     const leaderboard = users
       .sort(
@@ -45,6 +46,7 @@ export const getDailyLeaderboard = async (_req, res) => {
         email: user.email,
         xp: user.xp,
         level: user.level,
+        profileImage: user.profileImage || "",
         dailySolved: user.solvedDailyQuestions.length,
       }));
     res.json({
@@ -61,7 +63,7 @@ export const getContestLeaderboard = async (_req, res) => {
   try {
     // Fetch all users (no DB-level sort on array field — array length sort must happen in JS)
     const users = await User.find().select(
-      "name email xp level contestsParticipated",
+      "name email xp level contestsParticipated profileImage",
     );
     const leaderboard = users
       .sort(
@@ -74,6 +76,7 @@ export const getContestLeaderboard = async (_req, res) => {
         email: user.email,
         xp: user.xp,
         level: user.level,
+        profileImage: user.profileImage || "",
         contestsCount: user.contestsParticipated.length,
       }));
     res.json({
@@ -94,7 +97,7 @@ export const getContestLeaderboard = async (_req, res) => {
 export const getPlatformLeaderboard = async (_req, res) => {
   try {
     const users = await User.find().select(
-      "name email xp level college platformIds statsCache",
+      "name email xp level college platformIds statsCache profileImage",
     );
     const leaderboard = users
       .map((user) => {
@@ -108,6 +111,7 @@ export const getPlatformLeaderboard = async (_req, res) => {
           xp: user.xp,
           level: user.level,
           college: user.college || "",
+          profileImage: user.profileImage || "",
           leetcode: lc,
           codeforces: cf,
           codechef: cc,
@@ -170,9 +174,11 @@ export const getLiveContestRankings = async (_req, res) => {
           },
         },
       ],
-    }).sort({
-      startTime: -1,
-    });
+    })
+      .populate("leaderboard.userId", "name email profileImage")
+      .sort({
+        startTime: -1,
+      });
     const contests = todayContests.map((contest) => {
       const now = new Date();
       let status = "past";
@@ -190,8 +196,10 @@ export const getLiveContestRankings = async (_req, res) => {
           .sort((a, b) => a.rank - b.rank)
           .map((entry) => ({
             rank: entry.rank,
-            username: entry.username,
+            username: entry.username || entry.userId?.name || "User",
             score: entry.score,
+            profileImage: entry.userId?.profileImage || "",
+            email: entry.userId?.email || "",
           })),
       };
     });
@@ -234,7 +242,7 @@ export const getDailyQuestionTracker = async (_req, res) => {
 
     // Get all registered users to show who solved and who didn't
     const allUsers = await User.find()
-      .select("name email platformIds")
+      .select("name email platformIds profileImage")
       .limit(100);
     const solvedSet = new Set(
       question.solvedEntries.map((e) => e.userId.toString()),
@@ -257,6 +265,7 @@ export const getDailyQuestionTracker = async (_req, res) => {
       return {
         name: user.name,
         email: user.email,
+        profileImage: user.profileImage || "",
         solved,
         solvedAt,
       };
